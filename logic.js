@@ -4,7 +4,7 @@ var sketchProc = function(processingInstance) {
 		setup = function() {
 			size(window.innerWidth, window.innerHeight);
 			//background(255, 255, 255);
-			lp = new LayersPanel(290, 10);
+			lp = new LayersPanel(window.innerWidth - 110, 10);
 			lp.draw();
 		};
 		//simple point in cartesian coordinates
