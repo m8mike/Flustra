@@ -1,4 +1,5 @@
 var sketchProc = function(processingInstance) {
+	sketchProc1(processingInstance);
 	with (processingInstance) {
 		var lp;
 		setup = function() {

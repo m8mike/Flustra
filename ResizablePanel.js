@@ -1,4 +1,4 @@
-var sketchProc = function(processingInstance) {
+var sketchProc1 = function(processingInstance) {
 	with (processingInstance) {
 		var ResizablePanel = function(x, y, w, h) {
 			this.x = x;
