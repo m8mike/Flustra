@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Flustra</title>
+
+<script src="http://code.createjs.com/easeljs-0.6.0.min.js"></script>
+<script src="http://code.createjs.com/tweenjs-0.4.0.min.js"></script>
+<script src="http://code.createjs.com/movieclip-0.6.0.min.js"></script>
+<script src="processing.js"></script>
+<script src="logic.js"></script>
+<script src="init.js"></script>
+<style type="text/css">
+	html, body {
+		margin: 0px;
+	}
+	canvas {
+		display: block;
+	}
+</style>
+</head>
+
+<body onload="init();" style="background-color:#ffffff">
+	<canvas id="canvas" data-processing-sources="logic.js"></canvas>
+</body>
+</html>
