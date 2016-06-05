@@ -149,4 +149,4 @@
         $p.rect(this.x + 5, this.y + 15, this.w - 10, this.h - 30);
         this.checkCorners();
     };
-})
+})();
