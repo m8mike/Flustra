@@ -1,9 +1,10 @@
 var sketchProc = function(processingInstance) {
 	with (processingInstance) {
+		var lp;
 		setup = function() {
 			size(window.innerWidth, window.innerHeight);
 			//background(255, 255, 255);
-			var lp = new LayersPanel(290, 10);
+			lp = new LayersPanel(290, 10);
 			lp.draw();
 		};
 		//simple point in cartesian coordinates
