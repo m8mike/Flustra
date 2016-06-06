@@ -1,7 +1,6 @@
-var canvas;
+var canvas, lp;
 var sketchProc = function(processingInstance) {
 	with (processingInstance) {
-		var lp;
 		setup = function() {
 			size(window.innerWidth, window.innerHeight);
 			//background(255, 255, 255);
