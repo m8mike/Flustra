@@ -1,5 +1,8 @@
 draw = function() {
 	background(255, 255, 255);
+	if (!lp) {
+		console.log("no lp");
+	}
 	lp.draw();
 	if (lp.movingStarted) {
 		lp.resize();
