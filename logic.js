@@ -1,3 +1,4 @@
+var canvas;
 var sketchProc = function(processingInstance) {
 	with (processingInstance) {
 		var lp;
@@ -63,4 +64,10 @@ var sketchProc = function(processingInstance) {
 			}
 		};
 	}
+};
+
+function init() {
+	canvas = document.getElementById("canvas");
+	var processingInstance = new Processing(canvas, sketchProc);
+	resizable(processingInstance);
 };
