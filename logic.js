@@ -1,7 +1,4 @@
-console.log("logic");
-var canvas;
-var sketchProc = function(processingInstance) {
-	with (processingInstance) {
+
 		var ToolButton = function(x, y, name, action) {
 			this.x = x;
 			this.y = y;
@@ -83,11 +80,3 @@ var sketchProc = function(processingInstance) {
 		};
 		var lp = new LayersPanel(290, 10);
 		lp.draw();
-	}
-};
-
-var init = function() {
-	canvas = document.getElementById("canvas");
-	var processingInstance = new Processing(canvas, sketchProc);
-};
-init();
