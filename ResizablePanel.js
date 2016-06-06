@@ -49,8 +49,6 @@ ResizablePanel.prototype.checkCorners = function() {
         } else if (this.sideMoving.length === 1) {
             this.drawSide(this.sideMoving);
         }
-    } else if (this.newLayerButton.onOver()) {
-        
     } else if (dist(mouseX, mouseY, this.x, this.y) < 5) {
         this.drawCorner("LU");
     } else if (dist(mouseX, mouseY, this.x + this.w, this.y) < 5) {
