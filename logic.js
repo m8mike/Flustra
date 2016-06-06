@@ -1,12 +1,6 @@
 var canvas, lp;
 var sketchProc = function(processingInstance) {
 	with (processingInstance) {
-		setup = function() {
-			size(window.innerWidth, window.innerHeight);
-			//background(255, 255, 255);
-			lp = new LayersPanel(window.innerWidth - 210, 10, 200, window.innerHeight - 20);
-			lp.draw();
-		};
 		var ToolButton = function(x, y, name, action) {
 			this.x = x;
 			this.y = y;
