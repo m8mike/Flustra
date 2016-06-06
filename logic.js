@@ -1,4 +1,4 @@
-var canvas, lp;
+var canvas;
 var sketchProc = function(processingInstance) {
 	with (processingInstance) {
 		var ToolButton = function(x, y, name, action) {
