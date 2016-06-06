@@ -1,3 +1,4 @@
+console.log("init")
 var lp;
 setup = function() {
 	size(window.innerWidth, window.innerHeight);

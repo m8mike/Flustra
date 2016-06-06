@@ -1,3 +1,4 @@
+console.log("logic");
 var canvas;
 var sketchProc = function(processingInstance) {
 	with (processingInstance) {
