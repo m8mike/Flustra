@@ -1,6 +1,7 @@
 console.log("init")
 var canvas, lp;
 setup = function() {
+	console.log("setup");
 	canvas = document.getElementById("canvas");
 	size(window.innerWidth, window.innerHeight);
 	//background(255, 255, 255);
@@ -8,6 +9,7 @@ setup = function() {
 	lp.draw();
 };
 draw = function() {
+	console.log("draw");
 	background(255, 255, 255);
 	lp.draw();
 	if (lp.movingStarted) {
@@ -15,6 +17,7 @@ draw = function() {
 	}
 };
 mousePressed = function() {
+	console.log("mousePressed");
 	if (!lp.movingStarted && mouseButton === LEFT) {
 		lp.checkSide();
 		if (lp.sideMoving !== '') {
@@ -25,6 +28,7 @@ mousePressed = function() {
 	}
 };
 mouseReleased = function() {
+	console.log("mouseReleased");
 	if (mouseButton === LEFT) {
 		lp.onReleased();
 	}
