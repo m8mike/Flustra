@@ -8,7 +8,7 @@ setup = function() {
 	lp = new LayersPanel(window.innerWidth - 210, 10, 200, window.innerHeight - 20);
 	lp.draw();
 };
-draw = function() {
+void draw = function() {
 	console.log("draw");
 	background(255, 255, 255);
 	lp.draw();
@@ -27,7 +27,7 @@ void mousePressed = function() {
 		}
 	}
 }
-mouseReleased = function() {
+void mouseReleased = function() {
 	console.log("mouseReleased");
 	if (mouseButton === LEFT) {
 		lp.onReleased();
