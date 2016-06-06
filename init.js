@@ -16,7 +16,7 @@ draw = function() {
 		lp.resize();
 	}
 };
-mousePressed = function() {
+void mousePressed = function() {
 	console.log("mousePressed");
 	if (!lp.movingStarted && mouseButton === LEFT) {
 		lp.checkSide();
