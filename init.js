@@ -15,7 +15,7 @@ draw = function() {
 	if (lp.movingStarted) {
 		lp.resize();
 	}
-};
+}
 void mousePressed = function() {
 	console.log("mousePressed");
 	if (!lp.movingStarted && mouseButton === LEFT) {
@@ -26,7 +26,7 @@ void mousePressed = function() {
 			lp.onPressed();
 		}
 	}
-};
+}
 mouseReleased = function() {
 	console.log("mouseReleased");
 	if (mouseButton === LEFT) {
