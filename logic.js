@@ -69,6 +69,5 @@ var sketchProc = function(processingInstance) {
 var init = function() {
 	canvas = document.getElementById("canvas");
 	var processingInstance = new Processing(canvas, sketchProc);
-	resizable(processingInstance);
 };
 init();
