@@ -8,15 +8,16 @@ setup = function() {
 	lp = new LayersPanel(window.innerWidth - 210, 10, 200, window.innerHeight - 20);
 	lp.draw();
 };
-void draw = function() {
+draw = function() {
 	console.log("draw");
 	background(255, 255, 255);
 	lp.draw();
 	if (lp.movingStarted) {
 		lp.resize();
 	}
-}
-void mousePressed = function() {
+};
+mousePressed = function() {
+	println("mousePressed");
 	console.log("mousePressed");
 	if (!lp.movingStarted && mouseButton === LEFT) {
 		lp.checkSide();
@@ -26,8 +27,8 @@ void mousePressed = function() {
 			lp.onPressed();
 		}
 	}
-}
-void mouseReleased = function() {
+};
+mouseReleased = function() {
 	console.log("mouseReleased");
 	if (mouseButton === LEFT) {
 		lp.onReleased();
