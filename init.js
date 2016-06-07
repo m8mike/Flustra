@@ -30,6 +30,3 @@ mouseReleased = function() {
 		lp.sideMoving = '';
 	}
 };
-mouseClick = function() {
-	console.log("click");
-};

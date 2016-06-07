@@ -43,28 +43,52 @@ ResizablePanel.prototype.drawSide = function(side) {
     }
 };
 ResizablePanel.prototype.checkCorners = function() {
+    var corner;
+    if (dist(mouseX, mouseY, this.x, this.y) < 5) {
+        corner = "LU";
+    } else if (dist(mouseX, mouseY, this.x + this.w, this.y) < 5) {
+        corner = "RU";
+    } else if (dist(mouseX, mouseY, this.x, this.y + this.h) < 5) {
+        corner = "LD";
+    } else if (dist(mouseX, mouseY, this.x + this.w, this.y + this.h) < 5) {
+        corner = "RD";
+    }
+    if (corner) {
+        this.drawCorner(corner);
+        return true;
+    }
+    return false;
+};
+ResizablePanel.prototype.checkSides = function() {
+    var side;
+    if (Math.abs(mouseX - this.x) < 5) {
+        side = "L";
+    } else if (Math.abs(mouseX - (this.x + this.w)) < 5) {
+        side = "R";
+    } else if (Math.abs(mouseY - this.y) < 5) {
+        side = "U";
+    } else if (Math.abs(mouseY - (this.y + this.h)) < 5) {
+        side = "D";
+    }
+    if (side) {
+        this.drawSide(side);
+        return true;
+    }
+    return false;
+};
+ResizablePanel.prototype.checkMouse = function() {
     if (this.movingStarted) {
         if (this.sideMoving.length === 2) {
             this.drawCorner(this.sideMoving);
         } else if (this.sideMoving.length === 1) {
             this.drawSide(this.sideMoving);
         }
-    } else if (dist(mouseX, mouseY, this.x, this.y) < 5) {
-        this.drawCorner("LU");
-    } else if (dist(mouseX, mouseY, this.x + this.w, this.y) < 5) {
-        this.drawCorner("RU");
-    } else if (dist(mouseX, mouseY, this.x, this.y + this.h) < 5) {
-        this.drawCorner("LD");
-    } else if (dist(mouseX, mouseY, this.x + this.w, this.y + this.h) < 5) {
-        this.drawCorner("RD");
-    } else if (Math.abs(mouseX - this.x) < 5) {
-        this.drawSide("L");
-    } else if (Math.abs(mouseX - (this.x + this.w)) < 5) {
-        this.drawSide("R");
-    } else if (Math.abs(mouseY - this.y) < 5) {
-        this.drawSide("U");
-    } else if (Math.abs(mouseY - (this.y + this.h)) < 5) {
-        this.drawSide("D");
+    } else if (this.newLayerButton.onOver()) {
+        
+    } else if (this.checkCorners()) {
+        
+    } else {
+        this.checkSides();
     }
 };
 ResizablePanel.prototype.checkSide = function() {
@@ -126,5 +150,5 @@ ResizablePanel.prototype.draw = function() {
     rect(this.x, this.y, this.w, this.h);
     noFill();
     rect(this.x + 5, this.y + 15, this.w - 10, this.h - 30);
-    this.checkCorners();
+    this.checkMouse();
 };
