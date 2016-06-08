@@ -90,6 +90,9 @@ ResizablePanel.prototype.checkSide = function() {
 	} else {
 		this.sideMoving = this.checkSides();
 	}
+	if (!sideMoving) {
+		sideMoving = "";
+	}
 };
 ResizablePanel.prototype.resize = function() {
     var MIN_WIDTH = 100;
