@@ -53,11 +53,7 @@ ResizablePanel.prototype.checkCorners = function() {
     } else if (dist(mouseX, mouseY, this.x + this.w, this.y + this.h) < 5) {
         corner = "RD";
     }
-    if (corner) {
-        this.drawCorner(corner);
-        return true;
-    }
-    return false;
+	return corner;
 };
 ResizablePanel.prototype.checkSides = function() {
     var side;
@@ -70,11 +66,7 @@ ResizablePanel.prototype.checkSides = function() {
     } else if (Math.abs(mouseY - (this.y + this.h)) < 5) {
         side = "D";
     }
-    if (side) {
-        this.drawSide(side);
-        return true;
-    }
-    return false;
+	return side;
 };
 ResizablePanel.prototype.checkMouse = function() {
     if (this.movingStarted) {
@@ -86,29 +78,18 @@ ResizablePanel.prototype.checkMouse = function() {
     } else if (this.newLayerButton.onOver()) {
         
     } else if (this.checkCorners()) {
-        
-    } else {
-        this.checkSides();
+        this.drawCorner(this.checkCorners());
+    } else if (this.checkSides()) {
+		this.drawSide(this.checkSides());
     }
 };
 ResizablePanel.prototype.checkSide = function() {
-    if (dist(mouseX, mouseY, this.x, this.y) < 10) {
-        this.sideMoving = "LU";
-    } else if (dist(mouseX, mouseY, this.x + this.w, this.y) < 10) {
-        this.sideMoving = "RU";
-    } else if (dist(mouseX, mouseY, this.x, this.y + this.h) < 10) {
-        this.sideMoving = "LD";
-    } else if (dist(mouseX, mouseY, this.x + this.w, this.y + this.h) < 10) {
-        this.sideMoving = "RD";
-    } else if (Math.abs(mouseX - this.x) < 5) {
-        this.sideMoving = "L";
-    } else if (Math.abs(mouseX - (this.x + this.w)) < 5) {
-        this.sideMoving = "R";
-    } else if (Math.abs(mouseY - this.y) < 5) {
-        this.sideMoving = "U";
-    } else if (Math.abs(mouseY - (this.y + this.h)) < 5) {
-        this.sideMoving = "D";
-    }
+	var side = this.checkCorners();
+	if (side) {
+		this.sideMoving = side;
+	} else {
+		this.sideMoving = this.checkSides();
+	}
 };
 ResizablePanel.prototype.resize = function() {
     var MIN_WIDTH = 100;
