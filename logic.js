@@ -41,15 +41,16 @@ ToolButton.prototype.onReleased = function() {
     this.pressed = false;
 };
 var trace = function() {
-    println("hello");
+    println("new layer");
 };
-var LayersPanel = function(x, y) {
+var LayersPanel = function(x, y, w, h) {
     this.x = x;
     this.y = y;
-    this.w = 100;
-    this.h = 300;
+    this.w = w;
+    this.h = h;
     this.movingStarted = false;
     this.sideMoving = '';
+    this.layers = [];
     this.newLayerButton = new ToolButton(this.x + 55, this.y + this.h - 14, "New Layer", trace);
 };
 LayersPanel.prototype = Object.create(ResizablePanel.prototype);
@@ -71,11 +72,29 @@ LayersPanel.prototype.onPressed = function() {
 LayersPanel.prototype.onReleased = function() {
     this.newLayerButton.onReleased();
 };
-var Layer = function(name) {
+var Layer = function(name, parent) {
     this.name = name;
-    this.visible = true;
+    this.parent = parent;
+    this.contentVisible = true;
+    this.layerVisible = true;
     this.locked = false;
+    this.layerSelected = false;
+    this.contentSelected = false;
     this.color = color(random(0, 255), random(0, 255), random(0, 255));
+    this.children = [];
+};
+Layer.prototype.draw = function() {
+    if (!this.layerVisible) {
+        return null;
+    }
+    var color;
+    if (this.layerSelected) {
+        color = color(255, 154, 87);
+    } else if (this.children.length > 0) {
+        color = color(97, 97, 97);
+    } else {
+        color = color(112, 112, 112);
+    }
 };
 var lp = new LayersPanel(290, 10);
 lp.draw();

@@ -3,7 +3,8 @@ setup = function() {
 	canvas = document.getElementById("canvas");
 	size(window.innerWidth, window.innerHeight);
 	//background(255, 255, 255);
-	lp = new LayersPanel(window.innerWidth - 210, 10, 200, window.innerHeight - 20);
+	lp = new LayersPanel(window.innerWidth - 210, 10, 210, window.innerHeight - 20);
+	lp.layers.push(new Layer("Layer 1", null));
 	lp.draw();
 };
 draw = function() {
