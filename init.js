@@ -6,6 +6,10 @@ setup = function() {
 	lp = new LayersPanel(window.innerWidth - 210, 10, 210, window.innerHeight - 20);
 	lp.layers.push(new Layer("Layer 1", null));
 	lp.draw();
+	/*canvas.addEventListener('mousewheel',function(event){
+		mouseController.wheel(event);
+		return false; 
+	}, false);*/
 };
 draw = function() {
 	background(255, 255, 255);
