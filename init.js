@@ -20,6 +20,7 @@ var sketchProc = function(processingInstance) {
 			}
 		};
 		mousePressed = function() {
+			console.log("pressed");
 			if (!lp.movingStarted && mouseButton === LEFT) {
 				lp.checkSide();
 				if (lp.sideMoving !== '') {
@@ -30,6 +31,7 @@ var sketchProc = function(processingInstance) {
 			}
 		};
 		mouseReleased = function() {
+			console.log("released");
 			if (mouseButton === LEFT) {
 				lp.onReleased();
 			}
