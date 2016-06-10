@@ -18,7 +18,6 @@ void draw() {
 	}
 }
 void mousePressed() {
-	console.log("pressed");
 	if (!lp.movingStarted && mouseButton === LEFT) {
 		lp.checkSide();
 		if (lp.sideMoving !== '') {
@@ -29,7 +28,6 @@ void mousePressed() {
 	}
 }
 void mouseReleased() {
-	console.log("released");
 	if (mouseButton === LEFT) {
 		lp.onReleased();
 	}
