@@ -18,7 +18,9 @@ var sketchProc = function(processingInstance) {
 			if (lp.movingStarted) {
 				lp.resize();
 			}
-			if (!lp.movingStarted && mousePressed && mouseButton === LEFT) {
+		};
+		mousePressed = function() {
+			if (!lp.movingStarted && mouseButton === LEFT) {
 				lp.checkSide();
 				if (lp.sideMoving !== '') {
 					lp.movingStarted = true;
