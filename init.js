@@ -1,6 +1,13 @@
 var canvas, lp;
 var mousePressed = function() {
-	console.log("mouse pressed");
+	if (mouseButton === LEFT)
+		lp.checkSide();
+		if (lp.sideMoving !== '') {
+			lp.movingStarted = true;
+		} else {
+			lp.onPressed();
+		}
+	}
 };
 setup = function() {
 	canvas = document.getElementById("canvas");
@@ -24,12 +31,6 @@ draw = function() {
 		lp.resize();
 	}
 	if (!lp.movingStarted && mousePressed && mouseButton === LEFT) {
-		lp.checkSide();
-		if (lp.sideMoving !== '') {
-			lp.movingStarted = true;
-		} else {
-			lp.onPressed();
-		}
 	}
 };
 mouseReleased = function() {
