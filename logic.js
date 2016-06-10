@@ -1,3 +1,48 @@
+<<<<<<< HEAD
+=======
+var ToolButton = function(x, y, name, action) {
+    this.x = x;
+    this.y = y;
+    this.w = 14;
+    this.h = 14;
+    this.name = name;
+    this.action = action;
+    this.pressed = false;
+    this.mouseIsOver = false;
+};
+ToolButton.prototype.draw = function() {
+    if (this.pressed && this.mouseIsOver) {
+        stroke(0, 0, 0);
+        fill(41, 41, 41);
+    } else if (this.mouseIsOver) {
+        stroke(255, 255, 255);
+        fill(145, 145, 145);
+    } else {
+        noStroke();
+        fill(77, 77, 77);
+    }
+    rect(this.x, this.y, this.w, this.h);
+};
+ToolButton.prototype.onOver = function() {
+    if (mouseX > this.x && mouseX < this.x + 14 &&
+        mouseY > this.y && mouseY < this.y + 14) {
+        this.mouseIsOver = true;
+    } else {
+        this.mouseIsOver = false;
+    }
+    return this.mouseIsOver;
+};
+ToolButton.prototype.onPressed = function() {
+    this.pressed = this.onOver();
+};
+ToolButton.prototype.onReleased = function() {
+    this.pressed = this.onOver();
+    if (this.pressed && this.action) {
+        this.action();
+    }
+    this.pressed = false;
+};
+>>>>>>> parent of 55e4b8e... tabs and spaces
 var trace = function() {
 	println("new layer");
 };
@@ -13,6 +58,7 @@ var LayersPanel = function(x, y, w, h) {
 };
 LayersPanel.prototype = Object.create(ResizablePanel.prototype);
 LayersPanel.prototype.draw = function() {
+<<<<<<< HEAD
 	ResizablePanel.prototype.draw.call(this);//call superclass method
 	fill(255, 255, 255);
 	text("Layers", this.x + 5, this.y + 12);
@@ -22,17 +68,24 @@ LayersPanel.prototype.draw = function() {
 	for (var i = 0; i < this.layers.length; i++) {
 		this.layers[i].draw(layerPos);
 	}
+=======
+    ResizablePanel.prototype.draw.call(this);//call superclass method
+    fill(255, 255, 255);
+    text("Layers", this.x + 5, this.y + 12);
+    text("0 Layers", this.x + 5, this.y + this.h - 3);
+    this.newLayerButton.draw();
+>>>>>>> parent of 55e4b8e... tabs and spaces
 };
 LayersPanel.prototype.resize = function() {
-	ResizablePanel.prototype.resize.call(this);//call superclass method
-	this.newLayerButton.x = this.x + 55;
-	this.newLayerButton.y = this.y + this.h - 14;
+    ResizablePanel.prototype.resize.call(this);//call superclass method
+    this.newLayerButton.x = this.x + 55;
+    this.newLayerButton.y = this.y + this.h - 14;
 };
 LayersPanel.prototype.onPressed = function() {
-	this.newLayerButton.onPressed();
+    this.newLayerButton.onPressed();
 };
 LayersPanel.prototype.onReleased = function() {
-	this.newLayerButton.onReleased();
+    this.newLayerButton.onReleased();
 };
 var Layer = function(name, parent) {
 	this.name = name;
