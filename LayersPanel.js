@@ -25,11 +25,6 @@ LayersPanel.prototype.draw = function() {
 	for (var i = 0; i < this.layers.length; i++) {
 		this.layers[i].draw(layerPos);
 	}
-    ResizablePanel.prototype.draw.call(this);//call superclass method
-    fill(255, 255, 255);
-    text("Layers", this.x + 5, this.y + 12);
-    text("0 Layers", this.x + 5, this.y + this.h - 3);
-    this.newLayerButton.draw();
 };
 LayersPanel.prototype.resize = function() {
     ResizablePanel.prototype.resize.call(this);//call superclass method
