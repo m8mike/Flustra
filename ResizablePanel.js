@@ -90,8 +90,8 @@ ResizablePanel.prototype.checkSide = function() {
 	} else {
 		this.sideMoving = this.checkSides();
 	}
-	if (!this.sideMoving) {
-		this.sideMoving = "";
+	if (!sideMoving) {
+		sideMoving = "";
 	}
 };
 ResizablePanel.prototype.resize = function() {
