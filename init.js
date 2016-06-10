@@ -10,7 +10,7 @@ void setup() {
 		return false; 
 	}, false);*/
 }
-var draw() {
+void draw() {
 	background(255, 255, 255);
 	lp.draw();
 	if (lp.movingStarted) {
