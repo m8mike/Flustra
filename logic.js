@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 var ToolButton = function(x, y, name, action) {
     this.x = x;
     this.y = y;
@@ -42,7 +40,6 @@ ToolButton.prototype.onReleased = function() {
     }
     this.pressed = false;
 };
->>>>>>> parent of 55e4b8e... tabs and spaces
 var trace = function() {
 	println("new layer");
 };
@@ -58,7 +55,6 @@ var LayersPanel = function(x, y, w, h) {
 };
 LayersPanel.prototype = Object.create(ResizablePanel.prototype);
 LayersPanel.prototype.draw = function() {
-<<<<<<< HEAD
 	ResizablePanel.prototype.draw.call(this);//call superclass method
 	fill(255, 255, 255);
 	text("Layers", this.x + 5, this.y + 12);
@@ -68,13 +64,11 @@ LayersPanel.prototype.draw = function() {
 	for (var i = 0; i < this.layers.length; i++) {
 		this.layers[i].draw(layerPos);
 	}
-=======
     ResizablePanel.prototype.draw.call(this);//call superclass method
     fill(255, 255, 255);
     text("Layers", this.x + 5, this.y + 12);
     text("0 Layers", this.x + 5, this.y + this.h - 3);
     this.newLayerButton.draw();
->>>>>>> parent of 55e4b8e... tabs and spaces
 };
 LayersPanel.prototype.resize = function() {
     ResizablePanel.prototype.resize.call(this);//call superclass method
