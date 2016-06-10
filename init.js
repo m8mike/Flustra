@@ -24,6 +24,10 @@ draw = function() {
 		}
 	}
 };
+mousePressed = function() {
+	println("mouse pressed");
+	console.log("mouse pressed");
+};
 mouseReleased = function() {
 	if (mouseButton === LEFT) {
 		lp.onReleased();
