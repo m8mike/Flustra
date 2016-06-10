@@ -1,12 +1,10 @@
 var canvas, lp;
 var mousePressed = function() {
-	if (mouseButton === LEFT)
-		lp.checkSide();
-		if (lp.sideMoving !== '') {
-			lp.movingStarted = true;
-		} else {
-			lp.onPressed();
-		}
+	lp.checkSide();
+	if (lp.sideMoving !== '') {
+		lp.movingStarted = true;
+	} else {
+		lp.onPressed();
 	}
 };
 setup = function() {
