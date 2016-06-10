@@ -1,45 +1,3 @@
-var ToolButton = function(x, y, name, action) {
-    this.x = x;
-    this.y = y;
-    this.w = 14;
-    this.h = 14;
-    this.name = name;
-    this.action = action;
-    this.pressed = false;
-    this.mouseIsOver = false;
-};
-ToolButton.prototype.draw = function() {
-    if (this.pressed && this.mouseIsOver) {
-        stroke(0, 0, 0);
-        fill(41, 41, 41);
-    } else if (this.mouseIsOver) {
-        stroke(255, 255, 255);
-        fill(145, 145, 145);
-    } else {
-        noStroke();
-        fill(77, 77, 77);
-    }
-    rect(this.x, this.y, this.w, this.h);
-};
-ToolButton.prototype.onOver = function() {
-    if (mouseX > this.x && mouseX < this.x + 14 &&
-        mouseY > this.y && mouseY < this.y + 14) {
-        this.mouseIsOver = true;
-    } else {
-        this.mouseIsOver = false;
-    }
-    return this.mouseIsOver;
-};
-ToolButton.prototype.onPressed = function() {
-    this.pressed = this.onOver();
-};
-ToolButton.prototype.onReleased = function() {
-    this.pressed = this.onOver();
-    if (this.pressed && this.action) {
-        this.action();
-    }
-    this.pressed = false;
-};
 var trace = function() {
 	println("new layer");
 };
@@ -60,7 +18,10 @@ LayersPanel.prototype.draw = function() {
 	text("Layers", this.x + 5, this.y + 12);
 	text("0 Layers", this.x + 5, this.y + this.h - 3);
 	this.newLayerButton.draw();
-	var layerPos = new Point(this.x + 5, this.y + 15);
+	var layerPos = {
+		x : this.x + 5, 
+		y : this.y + 15
+	};
 	for (var i = 0; i < this.layers.length; i++) {
 		this.layers[i].draw(layerPos);
 	}
@@ -92,7 +53,7 @@ var Layer = function(name, parent) {
 	this.color = color(random(0, 255), random(0, 255), random(0, 255));
 	this.children = [];
 };
-Layer.prototype.draw = function(layerPos) {
+Layer.prototype.draw = function(pos) {
 	if (!this.layerVisible) {
 		return null;
 	}
@@ -103,7 +64,6 @@ Layer.prototype.draw = function(layerPos) {
 	} else {
 		fill(112, 112, 112);
 	}
-	stroke(0, 0, 0);
 };
 var lp = new LayersPanel(290, 10);
 lp.draw();

@@ -1,6 +1,5 @@
-var canvas, lp;
+var lp;
 setup = function() {
-	canvas = document.getElementById("canvas");
 	size(window.innerWidth, window.innerHeight);
 	//background(255, 255, 255);
 	lp = new LayersPanel(window.innerWidth - 210, 10, 210, window.innerHeight - 20);

@@ -22,8 +22,8 @@ ToolButton.prototype.draw = function() {
 	rect(this.x, this.y, this.w, this.h);
 };
 ToolButton.prototype.onOver = function() {
-	if (mouseX > this.x && mouseX < this.x + 14 &&
-		mouseY > this.y && mouseY < this.y + 14) {
+	if (mouseX > this.x && mouseX < this.x + this.w &&
+		mouseY > this.y && mouseY < this.y + this.h) {
 		this.mouseIsOver = true;
 	} else {
 		this.mouseIsOver = false;
