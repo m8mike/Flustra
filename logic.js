@@ -65,5 +65,3 @@ Layer.prototype.draw = function(pos) {
 		fill(112, 112, 112);
 	}
 };
-var lp = new LayersPanel(290, 10);
-lp.draw();
