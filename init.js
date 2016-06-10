@@ -15,8 +15,7 @@ draw = function() {
 	lp.draw();
 	if (lp.movingStarted) {
 		lp.resize();
-	}
-	if (!lp.movingStarted && mousePressed && mouseButton === LEFT) {
+	} else if (mousePressed && mouseButton === LEFT) {
 		lp.checkSide();
 		if (lp.sideMoving !== '') {
 			lp.movingStarted = true;
