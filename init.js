@@ -19,7 +19,7 @@ var sketchProc = function(processingInstance) {
 				lp.resize();
 			}
 		};
-		mousePressed = function() {
+		void mousePressed() {
 			console.log("pressed");
 			if (!lp.movingStarted && mouseButton === LEFT) {
 				lp.checkSide();
