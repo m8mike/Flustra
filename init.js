@@ -24,9 +24,9 @@ draw = function() {
 		}
 	}
 };
-mousePressed = function() {
-	println("mouse pressed");
-	console.log("mouse pressed");
+mousePressed = function(e) {
+	println("mouse pressed " + e);
+	console.log("mouse pressed " + e);
 };
 mouseReleased = function() {
 	if (mouseButton === LEFT) {
