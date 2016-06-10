@@ -1,5 +1,12 @@
-var lp;
+var canvas, lp;
+var mousePressed = function() {
+	console.log("mouse pressed");
+};
 setup = function() {
+	canvas = document.getElementById("canvas");
+	canvas.onmousedown = function(e){
+		mousePressed();
+	}
 	size(window.innerWidth, window.innerHeight);
 	//background(255, 255, 255);
 	lp = new LayersPanel(window.innerWidth - 210, 10, 210, window.innerHeight - 20);
@@ -15,7 +22,8 @@ draw = function() {
 	lp.draw();
 	if (lp.movingStarted) {
 		lp.resize();
-	} else if (mousePressed && mouseButton === LEFT) {
+	}
+	if (!lp.movingStarted && mousePressed && mouseButton === LEFT) {
 		lp.checkSide();
 		if (lp.sideMoving !== '') {
 			lp.movingStarted = true;
@@ -23,10 +31,6 @@ draw = function() {
 			lp.onPressed();
 		}
 	}
-};
-var mousePressed = function() {
-	println("mouse pressed");
-	console.log("mouse pressed");
 };
 mouseReleased = function() {
 	if (mouseButton === LEFT) {
