@@ -10,6 +10,7 @@ var LayersPanel = function(x, y, w, h) {
 	this.sideMoving = '';
 	this.layers = [];
 	this.newLayerButton = new ToolButton(this.x + 55, this.y + this.h - 14, "New Layer", trace);
+	this.scrollBar = new ScrollBar();
 };
 LayersPanel.prototype = Object.create(ResizablePanel.prototype);
 LayersPanel.prototype.draw = function() {
@@ -22,6 +23,7 @@ LayersPanel.prototype.draw = function() {
 	for (var i = 0; i < this.layers.length; i++) {
 		this.layers[i].draw(layerPos);
 	}
+	this.scrollBar.draw();
 };
 LayersPanel.prototype.resize = function() {
     ResizablePanel.prototype.resize.call(this);//call superclass method
