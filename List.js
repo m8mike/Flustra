@@ -14,7 +14,7 @@ List.prototype.resize = function(x, y, w, h) {
 	this.scrollBar.resize(x + w, y, h);
 };
 List.prototype.add = function() {
-    this.layers.push(new Layer());
+    this.layers.push(new Layer("Layer " + this.layers.length, this));
     var fullLength = this.layers.length * 50;
     if (fullLength < this.h) {
         this.scrollBar.size = this.scrollBar.maxSize;
