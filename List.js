@@ -23,8 +23,8 @@ List.prototype.add = function() {
     }
 };
 List.prototype.draw = function() {
-    fill(99, 99, 99);
-    rect(this.x, this.y, this.w, this.h);
+    /*fill(99, 99, 99);
+    rect(this.x, this.y, this.w, this.h);*/
 	var visibleCount = 0;
     for (var i = 0; i < this.layers.length; i++) {
 		if (this.layers[i].visible) {

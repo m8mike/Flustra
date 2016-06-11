@@ -9,6 +9,7 @@ var LayersPanel = function(x, y, w, h) {
 	this.movingStarted = false;
 	this.sideMoving = '';
 	this.list = new List(x + 5, y + 15, w - 10, h - 30);
+	this.list.add();
 	this.newLayerButton = new ToolButton(this.x + 55, this.y + this.h - 14, "New Layer", trace);
 	this.scrollBar = new ScrollBar(this.x + this.w, this.y, this.h);
 };

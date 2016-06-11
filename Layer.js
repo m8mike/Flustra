@@ -13,6 +13,7 @@ Layer.prototype.draw = function(pos) {
 	if (!this.layerVisible) {
 		return null;
 	}
+	stroke(0, 0, 0);
 	if (this.layerSelected) {
 		fill(255, 154, 87);
 	} else if (this.children.length > 0) {
@@ -20,4 +21,5 @@ Layer.prototype.draw = function(pos) {
 	} else {
 		fill(112, 112, 112);
 	}
+    rect(this.x, this.y, this.w, this.w);
 };
