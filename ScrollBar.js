@@ -7,6 +7,13 @@ var ScrollBar = function(x, y, h) {
     this.maxSize = h - 2*this.w;
     this.size = this.maxSize;
 };
+ScrollBar.prototype.resize = function(x, y, h) {
+	this.x = x;
+	this.y = y;
+    this.h = h;
+    this.maxSize = h - 2*this.w;
+    this.size = this.maxSize;
+};
 ScrollBar.prototype.draw = function() {
     fill(0, 0, 0);
     rect(this.x, this.y, this.w, this.w);

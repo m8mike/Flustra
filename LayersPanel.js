@@ -29,9 +29,7 @@ LayersPanel.prototype.resize = function() {
     ResizablePanel.prototype.resize.call(this);//call superclass method
     this.newLayerButton.x = this.x + 55;
     this.newLayerButton.y = this.y + this.h - 14;
-	this.scrollBar.x = this.x + this.w;
-	this.scrollBar.y = this.y;
-	this.scrollBar.h = this.h;
+	this.scrollBar.resize(this.x + this.w, this.y, this.h);
 };
 LayersPanel.prototype.onPressed = function() {
     this.newLayerButton.onPressed();
