@@ -18,10 +18,7 @@ LayersPanel.prototype.draw = function() {
 	text("Layers", this.x + 5, this.y + 12);
 	text("0 Layers", this.x + 5, this.y + this.h - 3);
 	this.newLayerButton.draw();
-	var layerPos = {
-		x : this.x + 5, 
-		y : this.y + 15
-	};
+	var layerPos = new Point(this.x + 5, this.y + 15);
 	for (var i = 0; i < this.layers.length; i++) {
 		this.layers[i].draw(layerPos);
 	}
