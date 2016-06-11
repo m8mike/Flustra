@@ -3,12 +3,19 @@ var List = function(x, y, w, h) {
     this.y = y;
     this.w = w;
     this.h = h;
-    this.allItems = [];
-    this.scrollBar = new ScrollBar(this.x + this.w, this.y, 350);
+    this.layers = [];
+	this.scrollBar = new ScrollBar(x + w, y, h);
+};
+List.prototype.resize = function(x, y, w, h) {
+    this.x = x;
+    this.y = y;
+    this.w = w;
+    this.h = h;
+	this.scrollBar.resize(x + w, y, h);
 };
 List.prototype.add = function() {
-    this.allItems.push(new Item());
-    var fullLength = this.allItems.length * 50;
+    this.layers.push(new Layer());
+    var fullLength = this.layers.length * 50;
     if (fullLength < this.h) {
         this.scrollBar.size = this.scrollBar.maxSize;
     } else {
@@ -18,9 +25,12 @@ List.prototype.add = function() {
 List.prototype.draw = function() {
     fill(99, 99, 99);
     rect(this.x, this.y, this.w, this.h);
-    for (var i = 0; i < this.allItems.length; i++) {
-        this.allItems[i].draw(this.x, this.y + items.length * 50, this.w, 50);
-        items.push(this.allItems[i]);
+	var visibleCount = 0;
+    for (var i = 0; i < this.layers.length; i++) {
+		if (this.layers[i].visible) {
+			this.layers[i].draw(this.x, this.y + visibleCount * 50, this.w, 50);
+			visibleCount++;
+		}
     }
     this.scrollBar.draw();
 };
