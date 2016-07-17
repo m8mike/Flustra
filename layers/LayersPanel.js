@@ -18,8 +18,6 @@ var LayersPanel = function(x, y, w, h) {
 	this.sideMoving = '';
 	this.list = new List(x + 5, y + 15, w - 10, h - 30);
 	this.list.addLayer();
-	this.list.addLayer();
-	this.list.addLayer();
     self = this;
 	this.newLayerButton = new NewLayerButton(this.x + 75, this.y + this.h - 14, "New Layer", addLayer);
 	this.newSublayerButton = new NewSublayerButton(this.x + 95, this.y + this.h - 14, "New Sublayer", addSublayer);

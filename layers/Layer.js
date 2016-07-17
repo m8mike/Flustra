@@ -32,7 +32,7 @@ Layer.prototype.draw = function(x, y, w, h) {
 var drawEye = function(x, y) {
     pushMatrix();
     translate(x+5, y+5);
-    scale(1.1);
+    scale(1.5);
     var canvas = document.getElementById("canvas");
     var ctx = canvas.getContext("2d");
     // eye/
@@ -94,7 +94,8 @@ var drawEye = function(x, y) {
 };
 var drawLock = function(x, y) {
     pushMatrix();
-    translate(x+5, y+5);
+    translate(x+7, y+3);
+	scale(1.5);
     var canvas = document.getElementById("canvas");
     var ctx = canvas.getContext("2d");
     // lock/ 
