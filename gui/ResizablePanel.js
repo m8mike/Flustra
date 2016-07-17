@@ -115,7 +115,7 @@ ResizablePanel.prototype.checkSide = function() {
 	}
 };
 ResizablePanel.prototype.resize = function() {
-	var MIN_WIDTH = 100;
+	var MIN_WIDTH = 150;
 	if (this.sideMoving.includes("L")) {
 		if (mouseX < this.x + this.w - MIN_WIDTH) {
 			this.w = this.x - mouseX + this.w;

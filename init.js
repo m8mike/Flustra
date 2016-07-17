@@ -20,8 +20,9 @@ void draw() {
 	}
 }
 void mousePressed() {
-	if (mouseX > lp.x && (mouseX < lp.x + lp.w) &&
-		mouseY > lp.y && (mouseY < lp.y + lp.h)) {
+	var resizeOffset = 5;
+	if ((mouseX > lp.x - resizeOffset) && (mouseX < lp.x + lp.w + resizeOffset) &&
+		(mouseY > lp.y - resizeOffset) && (mouseY < lp.y + lp.h + resizeOffset)) {
 		if (!lp.movingStarted && mouseButton === LEFT) {
 			lp.checkSide();
 			if (lp.sideMoving !== '') {
