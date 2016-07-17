@@ -52,8 +52,14 @@ Contour.prototype.isMoving = function() {
     return false;
 };
 Contour.prototype.setMoving = function(moving) {
+	if (!this.points.length) {
+		return null;
+	}
     this.points[this.points.length - 1].movingStarted = moving;
 };
 Contour.prototype.updateAnchors = function(x, y) {
+	if (!this.points.length) {
+		return null;
+	}
     this.points[this.points.length - 1].updateAnchors(x, y);
 };

@@ -22,7 +22,7 @@ var LayersPanel = function(x, y, w, h) {
 	this.newLayerButton = new NewLayerButton(this.x + 75, this.y + this.h - 14, "New Layer", addLayer);
 	this.newSublayerButton = new NewSublayerButton(this.x + 95, this.y + this.h - 14, "New Sublayer", addSublayer);
 	this.deleteLayerButton = new DeleteLayerButton(this.x + 115, this.y + this.h - 14, "Delete Layer", deleteLayer);
-	this.scrollBar = new ScrollBar(this.x + this.w, this.y, this.h);
+	this.scrollBar = new ScrollBar(this.x + this.w - 5, this.y, this.h);
 };
 LayersPanel.prototype = Object.create(ResizablePanel.prototype);
 LayersPanel.prototype.draw = function() {

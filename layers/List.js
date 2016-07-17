@@ -12,10 +12,16 @@ List.prototype.resize = function(x, y, w, h) {
     this.w = w;
     this.h = h;
 	this.scrollBar.resize(x + w, y, h);
+	var fullLength = this.layers.length * 20;
+    if (fullLength < this.h) {
+        this.scrollBar.size = this.scrollBar.maxSize;
+    } else {
+        this.scrollBar.size = this.scrollBar.maxSize * this.h / fullLength;
+    }
 };
 List.prototype.addLayer = function() {
     this.layers.push(new Layer("Layer " + this.layers.length, this));
-    var fullLength = this.layers.length * 50;
+    var fullLength = this.layers.length * 20;
     if (fullLength < this.h) {
         this.scrollBar.size = this.scrollBar.maxSize;
     } else {
@@ -40,7 +46,7 @@ List.prototype.draw = function() {
 	var visibleCount = 0;
     for (var i = 0; i < this.layers.length; i++) {
 		if (this.layers[i].visible) {
-			this.layers[i].draw(this.x, this.y + visibleCount * 21, this.w, 20);
+			this.layers[i].draw(this.x, this.y + visibleCount * 20, this.w, 20);
 			visibleCount++;
 		}
     }

@@ -40,8 +40,8 @@ ScrollBar.prototype.resize = function(x, y, h) {
 	this.x = x;
 	this.y = y;
     this.h = h;
+    //this.size *= (h - 2*this.w) / this.maxSize;
     this.maxSize = h - 2*this.w;
-    this.size = this.maxSize;
 };
 ScrollBar.prototype.draw = function() {
     if (this.movingStarted) {
