@@ -38,12 +38,16 @@ void mousePressed() {
 	}
 }
 void mouseReleased() {
-	if (mouseButton === LEFT) {
-		contourManager.onReleased();
-		lp.onReleased();
-	}
 	if (lp.movingStarted && mouseButton === LEFT) {
 		lp.movingStarted = false;
 		lp.sideMoving = '';
 	}
+	if (mouseButton === LEFT) {
+		contourManager.onReleased();
+		lp.onReleased();
+	}
+}
+void mouseOut() {
+	lp.movingStarted = false;
+	lp.sideMoving = '';
 }
