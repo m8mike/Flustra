@@ -20,8 +20,8 @@ void draw() {
 	}
 }
 void mousePressed() {
-	if (mouseX > lp.x && mouseX < lp.x + lp.w &&
-		mouseY > lp.y && mouseY < lp.y + lp.h) {
+	if (mouseX > lp.x && (mouseX < lp.x + lp.w) &&
+		mouseY > lp.y && (mouseY < lp.y + lp.h)) {
 		if (!lp.movingStarted && mouseButton === LEFT) {
 			lp.checkSide();
 			if (lp.sideMoving !== '') {
