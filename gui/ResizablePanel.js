@@ -85,6 +85,10 @@ ResizablePanel.prototype.checkMouse = function() {
 		}
 	} else if (this.newLayerButton.onOver()) {
 		
+	} else if (this.newSublayerButton.onOver()) {
+		
+	} else if (this.deleteLayerButton.onOver()) {
+		
 	} else if (this.checkCorners()) {
 		
 	} else {
