@@ -1,33 +1,100 @@
 var Layer = function(name, parent) {
 	this.name = name;
 	this.parent = parent;
+	
 	this.contentVisible = true;
-	this.layerVisible = true;
-    this.visible = true;
-	this.locked = false;
-	this.layerSelected = false;
 	this.contentSelected = false;
+	
+	this.layerVisible = true;
+	this.layerSelected = false;
+	
+	this.childrenVisible = false;
+	
+	this.locked = true;
+	this.active = false;
+	
 	this.color = color(random(0, 255), random(0, 255), random(0, 255));
 	this.children = [];
 };
 Layer.prototype.draw = function(x, y, w, h) {
 	if (!this.layerVisible) {
-		return null;
+		return false;
 	}
+	this.drawBackground(x, y, w, h);
+	if (this.contentVisible) {
+		drawEye(x, y);
+	}
+    if (this.locked) {
+		drawLock(x+20, y);
+	}
+	if (this.active) {
+		drawCheckMark(x+40, y);
+	}
+    this.drawColor(x+60, y+1);
+	this.drawText(x+90, y+16);
+	if (this.children.length == 0) {
+		return true;
+	}
+	if (this.childrenVisible) {
+		this.drawTriangleOpen(x+70, y+2);
+	} else {
+		this.drawTriangle(x+70, y);
+	 }
+	return true;
+};
+Layer.prototype.drawBackground = function(x, y, w, h) {
 	stroke(0, 0, 0);
 	if (this.layerSelected) {
-        println(1);
 		fill(255, 154, 87);
 	} else if (this.children.length > 0) {
-        println(2);
 		fill(97, 97, 97);
 	} else {
 		fill(112, 112, 112);
 		//fill(0, 0, 0);
 	}
     rect(x, y, w, h);
-    drawEye(x, y);
-    drawLock(x+20, y);
+};
+Layer.prototype.drawText = function(x, y) {
+	fill(255,255,255);
+	noStroke();
+	text(this.name, x, y);
+};
+Layer.prototype.drawTriangle = function(x, y) {
+	noStroke();
+	fill(color(255, 255, 255));
+	triangle(x, y+4, x+10, y+10, x, y+16);
+};
+Layer.prototype.drawTriangleOpen = function(x, y) {
+	noStroke();
+	fill(color(255, 255, 255));
+	pushMatrix();
+	translate(x+15, y+5);
+	pushMatrix();
+	rotate(Math.PI/2);
+	triangle(0, 4, 10, 10, 0, 16);
+	popMatrix();
+	popMatrix();
+};
+Layer.prototype.drawColor = function(x, y) {
+	noStroke();
+	fill(this.color);
+	rect(x, y, 5, 19);
+};
+var drawCheckMark = function(x, y) {
+	noStroke();
+	fill(color(255, 255, 255));
+	pushMatrix();
+	translate(x, y+7);
+	beginShape();
+	vertex(0,0);
+	vertex(5,5);
+	vertex(15,-5);
+	vertex(15,0);
+	vertex(5,10);
+	vertex(0,5);
+	vertex(0,0);
+	endShape();
+	popMatrix();
 };
 var drawEye = function(x, y) {
     pushMatrix();

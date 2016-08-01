@@ -25,8 +25,8 @@ void mousePressed() {
 		(mouseY > lp.y - resizeOffset) && (mouseY < lp.y + lp.h + resizeOffset)) {
 		if (!lp.movingStarted && mouseButton === LEFT) {
 			lp.checkSide();
-			var canvas = document.getElementById("canvas");
-			canvas.style.cursor = "ew-resize";
+			//var canvas = document.getElementById("canvas");
+			//canvas.style.cursor = "ew-resize";
 			if (lp.sideMoving.length > 0 && lp.sideMoving.length < 3) {
 				lp.movingStarted = true;
 			} else {
@@ -43,8 +43,8 @@ void mouseReleased() {
 	if (lp.movingStarted && mouseButton === LEFT) {
 		lp.movingStarted = false;
 		lp.sideMoving = '';
-		var canvas = document.getElementById("canvas");
-		canvas.style.cursor = "auto";
+		//var canvas = document.getElementById("canvas");
+		//canvas.style.cursor = "auto";
 	}
 	if (mouseButton === LEFT) {
 		contourManager.onReleased();

@@ -76,6 +76,9 @@ ResizablePanel.prototype.checkSides = function() {
 	}
 	return false;
 };
+ResizablePanel.prototype.checkButtons = function() {
+	return false;
+};
 ResizablePanel.prototype.checkMouse = function() {
 	if (this.movingStarted) {
 		if (this.sideMoving.length === 2) {
@@ -83,11 +86,7 @@ ResizablePanel.prototype.checkMouse = function() {
 		} else if (this.sideMoving.length === 1) {
 			this.drawSide(this.sideMoving);
 		}
-	} else if (this.newLayerButton.onOver()) {
-		
-	} else if (this.newSublayerButton.onOver()) {
-		
-	} else if (this.deleteLayerButton.onOver()) {
+	} else if (this.checkButtons()) {
 		
 	} else if (this.checkCorners()) {
 		
