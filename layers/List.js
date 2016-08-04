@@ -32,12 +32,6 @@ List.prototype.resize = function(x, y, w, h) {
 List.prototype.addLayer = function() {
     this.layers.push(new Layer("Layer " + this.layers.length, null));
 	this.resize(this.x, this.y, this.w, this.h);
-    /*var fullLength = this.layers.length * 20;
-    if (fullLength < this.h) {
-        this.scrollBar.size = this.scrollBar.maxSize;
-    } else {
-        this.scrollBar.size = this.scrollBar.maxSize * this.h / fullLength;
-    }*/
 };
 List.prototype.addSublayer = function() {
 	for (var i = 0; i < this.visibleLayers.length; i++) {
@@ -57,8 +51,12 @@ List.prototype.deleteAllChildren = function(layer) {
 		this.deleteAllChildren(layer.children[i]);
 	}
 	layer.remove();
-	this.visibleLayers.splice(this.visibleLayers.indexOf(layer), 1);
-	this.layers.splice(this.layers.indexOf(layer), 1);
+	if (this.visibleLayers.indexOf(layer) != -1) {
+		this.visibleLayers.splice(this.visibleLayers.indexOf(layer), 1);
+	}
+	if (this.layers.indexOf(layer) != -1) {
+		this.layers.splice(this.layers.indexOf(layer), 1);
+	}
 };
 List.prototype.deleteLayer = function() {
 	var layersToRemove = [];

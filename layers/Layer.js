@@ -54,10 +54,6 @@ Layer.prototype.deselectChildren = function() {
 	}
 };
 Layer.prototype.remove = function() {
-	if (this.parent) {
-		this.parent.children.splice(this.parent.children.indexOf(this), 1);
-		this.parent = null;
-	}
 	this.contentVisible = false;
 	this.contentSelected = false;
 	this.layerVisible = false;
