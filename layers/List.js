@@ -4,6 +4,7 @@ var List = function(x, y, w, h) {
     this.w = w;
     this.h = h;
     this.layers = [];
+    this.visibleLayers = [];
 	this.scrollBar = new ScrollBar(x + w - 5, y, h);
 	this.addLayer();
 	this.active = this.layers[0];
@@ -29,7 +30,7 @@ List.prototype.resize = function(x, y, w, h) {
     }
 };
 List.prototype.addLayer = function() {
-    this.layers.push(new Layer("Layer " + this.layers.length, this));
+    this.layers.push(new Layer("Layer " + this.layers.length, null));
 	this.resize(this.x, this.y, this.w, this.h);
     /*var fullLength = this.layers.length * 20;
     if (fullLength < this.h) {
@@ -39,13 +40,76 @@ List.prototype.addLayer = function() {
     }*/
 };
 List.prototype.addSublayer = function() {
-    println("addSublayer");
+	for (var i = 0; i < this.visibleLayers.length; i++) {
+		if (this.visibleLayers[i].layerSelected) {
+			this.visibleLayers[i].childrenVisible = true;
+			this.visibleLayers[i].children.push(new Layer(this.visibleLayers[i].name 
+				+ " " + this.visibleLayers[i].children.length, this.visibleLayers[i]));
+			var layer = this.visibleLayers[i].children[this.visibleLayers[i].children.length - 1];
+			this.layers.splice(i + this.visibleLayers[i].countChildren(), 0, layer);
+			this.resize(this.x, this.y, this.w, this.h);
+			return null;
+		}
+	}
+};
+List.prototype.deleteAllChildren = function(layer) {
+	for (var i = 0; i < layer.children.length; i++) {
+		this.deleteAllChildren(layer.children[i]);
+	}
+	layer.remove();
+	this.visibleLayers.splice(this.visibleLayers.indexOf(layer), 1);
+	this.layers.splice(this.layers.indexOf(layer), 1);
 };
 List.prototype.deleteLayer = function() {
-    println("delete layer");
+	var layersToRemove = [];
+    for (var i = 0; i < this.visibleLayers.length; i++) {
+		if (this.visibleLayers[i].layerSelected && !this.visibleLayers[i].active) {
+			layersToRemove.push(this.visibleLayers[i]);
+		}
+	}
+    for (var i = 0; i < layersToRemove.length; i++) {
+		this.deleteAllChildren(layersToRemove[i]);
+	}
 };
 List.prototype.onPressed = function() {
-	this.scrollBar.onPressed();
+	if (this.scrollBar.onPressed()) {
+		
+	} else if (mouseX > this.x && mouseX < this.x + this.w) {
+		if (mouseY > this.y && mouseY < this.y + this.h) {
+			var offset = mouseY - this.y + Math.abs(this.scrollBar.offsetY);
+			var layerPressed = this.visibleLayers[int((offset - (offset % 20)) / 20)];
+			if (!layerPressed) {
+				return null;
+			}
+			if (mouseX < this.x + 20) {
+				if (!layerPressed.active) {
+					layerPressed.contentVisible = !layerPressed.contentVisible;
+				}
+			} else if (mouseX < this.x + 40) {
+				if (!layerPressed.active) {
+					layerPressed.locked = !layerPressed.locked;
+				}
+			} else if (mouseX < this.x + 60) {
+				if (!layerPressed.active) {
+					for (var i = 0; i < this.visibleLayers.length; i++) {
+						this.visibleLayers[i].active = false;
+					}
+					layerPressed.active = true;
+					layerPressed.contentVisible = true;
+					layerPressed.locked = false;
+				}
+			} else if (layerPressed.children.length > 0 &&
+						mouseX > this.x + 70 + layerPressed.countParents() * 20 && 
+						mouseX < this.x + 90 + layerPressed.countParents() * 20) {
+				layerPressed.setChildrenVisible(!layerPressed.childrenVisible);
+			} else {
+				for (var i = 0; i < this.visibleLayers.length; i++) {
+					this.visibleLayers[i].layerSelected = false;
+				}
+				layerPressed.layerSelected = true;
+			}
+		}
+	}
 };
 List.prototype.onReleased = function() {
 	this.scrollBar.onReleased();
@@ -59,13 +123,13 @@ List.prototype.draw = function() {
     ctx.beginPath();
     ctx.rect(this.x, this.y, this.w, this.h);
     ctx.clip();
-	var visibleCount = 0;
+	this.visibleLayers = [];
     for (var i = 0; i < this.layers.length; i++) {
-		if (this.layers[i].draw(this.x, this.y + visibleCount * 20 + this.scrollBar.offsetY, this.w, 20)) {
-			visibleCount++;
+		if (this.layers[i].draw(this.x, this.y + this.visibleLayers.length * 20 + this.scrollBar.offsetY, this.w, 20)) {
+			this.visibleLayers.push(this.layers[i]);
 		}
     }
-	this.scrollBar.listHeight = visibleCount * 20;
+	this.scrollBar.listHeight = this.visibleLayers.length * 20;
     popMatrix();
     this.scrollBar.draw();
 };

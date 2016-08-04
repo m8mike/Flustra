@@ -10,11 +10,58 @@ var Layer = function(name, parent) {
 	
 	this.childrenVisible = false;
 	
-	this.locked = true;
+	this.locked = false;
 	this.active = false;
 	
 	this.color = color(random(0, 255), random(0, 255), random(0, 255));
 	this.children = [];
+};
+Layer.prototype.parentsVisible = function() {
+	if (this.parent) {
+		if (!this.parent.contentVisible) {
+			return false;
+		}
+		return this.parent.parentsVisible();
+	}
+	return true;
+};
+Layer.prototype.countParents = function() {
+	if (this.parent != null) {
+		return 1 + this.parent.countParents();
+	}
+	return 0;
+};
+Layer.prototype.countChildren = function() {
+	var numChildren = this.children.length;
+	for (var i = 0; i < this.children.length; i++) {
+		numChildren += this.children[i].countChildren();
+	}
+	return numChildren;
+};
+Layer.prototype.setChildrenVisible = function(visible) {
+	this.childrenVisible = visible;
+	for (var i = 0; i < this.children.length; i++) {
+		this.children[i].layerVisible = visible;
+		if (!visible) {
+			this.children[i].deselectChildren();
+		}
+	}
+};
+Layer.prototype.deselectChildren = function() {
+	this.layerSelected = false;
+	for (var i = 0; i < this.children.length; i++) {
+		this.children[i].deselectChildren();
+	}
+};
+Layer.prototype.remove = function() {
+	if (this.parent) {
+		this.parent.children.splice(this.parent.children.indexOf(this), 1);
+		this.parent = null;
+	}
+	this.contentVisible = false;
+	this.contentSelected = false;
+	this.layerVisible = false;
+	this.layerSelected = false;
 };
 Layer.prototype.draw = function(x, y, w, h) {
 	if (!this.layerVisible) {
@@ -22,7 +69,11 @@ Layer.prototype.draw = function(x, y, w, h) {
 	}
 	this.drawBackground(x, y, w, h);
 	if (this.contentVisible) {
-		drawEye(x, y);
+		if (this.parentsVisible()) {
+			drawEye(x, y, false);
+		} else {
+			drawEye(x, y, true);
+		}
 	}
     if (this.locked) {
 		drawLock(x+20, y);
@@ -31,14 +82,14 @@ Layer.prototype.draw = function(x, y, w, h) {
 		drawCheckMark(x+40, y);
 	}
     this.drawColor(x+60, y+1);
-	this.drawText(x+90, y+16);
+	this.drawText(x+90+this.countParents()*20, y+16);
 	if (this.children.length == 0) {
 		return true;
 	}
 	if (this.childrenVisible) {
-		this.drawTriangleOpen(x+70, y+2);
+		this.drawTriangleOpen(x+70+this.countParents()*20, y+2);
 	} else {
-		this.drawTriangle(x+70, y);
+		this.drawTriangle(x+70+this.countParents()*20, y);
 	 }
 	return true;
 };
@@ -53,6 +104,9 @@ Layer.prototype.drawBackground = function(x, y, w, h) {
 		//fill(0, 0, 0);
 	}
     rect(x, y, w, h);
+	stroke(100, 100, 100);
+	line(x + 20, y + 1, x + 20, y + 19);
+	line(x + 40, y + 1, x + 40, y + 19);
 };
 Layer.prototype.drawText = function(x, y) {
 	fill(255,255,255);
@@ -84,7 +138,7 @@ var drawCheckMark = function(x, y) {
 	noStroke();
 	fill(color(255, 255, 255));
 	pushMatrix();
-	translate(x, y+7);
+	translate(x + 3, y + 7);
 	beginShape();
 	vertex(0,0);
 	vertex(5,5);
@@ -96,9 +150,9 @@ var drawCheckMark = function(x, y) {
 	endShape();
 	popMatrix();
 };
-var drawEye = function(x, y) {
+var drawEye = function(x, y, grey) {
     pushMatrix();
-    translate(x+5, y+5);
+    translate(x+2, y+5);
     scale(1.5);
     var canvas = document.getElementById("canvas");
     var ctx = canvas.getContext("2d");
@@ -113,7 +167,7 @@ var drawEye = function(x, y) {
     ctx.bezierCurveTo(1.6, 6.7, 0.8, 4.4, 0.8, 4.4);
     ctx.lineTo(0.8, 2.9);
     ctx.closePath();
-    ctx.fillStyle = "rgb(255, 255, 255)";
+    ctx.fillStyle = grey?"rgb(155, 155, 155)":"rgb(255, 255, 255)";
     ctx.fill();
 
     // eye/
@@ -144,7 +198,7 @@ var drawEye = function(x, y) {
     ctx.bezierCurveTo(5.3, 2.4, 5.7, 1.9, 6.3, 1.9);
     ctx.bezierCurveTo(6.8, 1.9, 7.2, 2.4, 7.2, 2.9);
     ctx.closePath();
-    ctx.fillStyle = "rgb(255, 255, 255)";
+    ctx.fillStyle = grey?"rgb(155, 155, 155)":"rgb(255, 255, 255)";
     ctx.fill();
 
     // eye/
@@ -161,7 +215,7 @@ var drawEye = function(x, y) {
 };
 var drawLock = function(x, y) {
     pushMatrix();
-    translate(x+7, y+3);
+    translate(x+5, y+3);
 	scale(1.5);
     var canvas = document.getElementById("canvas");
     var ctx = canvas.getContext("2d");
