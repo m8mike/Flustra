@@ -21,10 +21,19 @@ var LayersPanel = function(x, y, w, h) {
 	this.newLayerButton = new NewLayerButton(this.x + 75, this.y + this.h - 14, "New Layer", addLayer);
 	this.newSublayerButton = new NewSublayerButton(this.x + 95, this.y + this.h - 14, "New Sublayer", addSublayer);
 	this.deleteLayerButton = new DeleteLayerButton(this.x + 115, this.y + this.h - 14, "Delete Layer", deleteLayer);
+    var canvas = document.getElementById("canvas");
+	canvas.addEventListener('dblclick', this.list.onDoubleClick);
 };
 LayersPanel.prototype = Object.create(ResizablePanel.prototype);
 LayersPanel.prototype.draw = function() {
+	this.list.drawContent();
+	if (contourManager && contourManager.contour) {
+		contourManager.contour.drawHandlers();
+	}
 	ResizablePanel.prototype.draw.call(this);//call superclass method
+	noFill();
+	stroke(0, 0, 0);
+	rect(this.x + 5, this.y + 15, this.w - 10, this.h - 30);
 	fill(255, 255, 255);
 	text("Layers", this.x + 5, this.y + 12);
 	text("0 Layers", this.x + 5, this.y + this.h - 3);

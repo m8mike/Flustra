@@ -3,7 +3,6 @@ var Layer = function(name, parent) {
 	this.parent = parent;
 	
 	this.contentVisible = true;
-	this.contentSelected = false;
 	
 	this.layerVisible = true;
 	this.layerSelected = false;
@@ -16,14 +15,37 @@ var Layer = function(name, parent) {
 	this.color = color(random(0, 255), random(0, 255), random(0, 255));
 	this.children = [];
 };
+Layer.prototype.deactivate = function() {
+	if (this.content) {
+		this.content.fixColor();
+		this.content.active  = false;
+		if (contourManager.contour === this.content) {
+			contourManager.contour = undefined;
+		}
+	}
+};
 Layer.prototype.parentsVisible = function() {
 	if (this.parent) {
 		if (!this.parent.contentVisible) {
+			this.deactivate();
 			return false;
 		}
-		return this.parent.parentsVisible();
+		var vis = this.parent.parentsVisible();
+		if (!vis) {
+			this.deactivate();
+		}
+		return vis;
 	}
 	return true;
+};
+Layer.prototype.checkActiveChildren = function() {
+	for (var i = 0; i < this.children.length; i++) {
+		if (this.children[i].active) {
+			return true;
+		}
+		this.children[i].checkActiveChildren();
+	}
+	return false;
 };
 Layer.prototype.countParents = function() {
 	if (this.parent != null) {
@@ -55,9 +77,15 @@ Layer.prototype.deselectChildren = function() {
 };
 Layer.prototype.remove = function() {
 	this.contentVisible = false;
-	this.contentSelected = false;
 	this.layerVisible = false;
 	this.layerSelected = false;
+	this.deleted = true;
+};
+Layer.prototype.drawContent = function() {
+	if (this.contentVisible && this.content && this.parentsVisible()) {
+		this.content.visible = this.contentVisible;
+		this.content.draw();
+	}
 };
 Layer.prototype.draw = function(x, y, w, h) {
 	if (!this.layerVisible) {
@@ -84,6 +112,12 @@ Layer.prototype.draw = function(x, y, w, h) {
 	}
 	if (this.childrenVisible) {
 		this.drawTriangleOpen(x+70+this.countParents()*20, y+2);
+		for (var i = 0; i < this.children.length; i++) {
+			if (this.children[i].deleted) {
+				this.children.splice(i, 1);
+				break;
+			}
+		}
 	} else {
 		this.drawTriangle(x+70+this.countParents()*20, y);
 	 }

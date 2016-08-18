@@ -87,6 +87,9 @@ ScrollBar.prototype.draw = function() {
 	} else if (this.bottomButtonPressed) {
 		this.onBottomButtonPressed();
 	}
+	if (this.size === this.maxSize) {
+		return null;
+	}
 	stroke(0, 0, 0);
     fill(0, 0, 0);
     rect(this.x, this.y, this.w, this.w);

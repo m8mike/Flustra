@@ -1,6 +1,18 @@
 var Contour = function() {
     this.points = [];
     this.closed = false;
+	this.fillColor = colorSelect.fillColor;
+	this.strokeColor = colorSelect.strokeColor;
+	this.strokeWidth = 5;
+	this.active = true;
+	this.visible = true;
+};
+Contour.prototype.setColor = function(f, s) {
+	this.fillColor = {r:f.r, g:f.g, b:f.b};
+	this.strokeColor = {r:s.r, g:s.g, b:s.b};
+};
+Contour.prototype.fixColor = function() {
+	this.setColor(this.fillColor, this.strokeColor);
 };
 Contour.prototype.add = function(x, y) {
     this.points.push(new ContourPoint(x, y));
@@ -15,12 +27,21 @@ Contour.prototype.add = function(x, y) {
     this.points[this.points.length - 1].anchorPoint2.visible = true;
 };
 Contour.prototype.draw = function() {
-    if (!this.points.length) {
-        return null;
-    }
+	if (this.visible) {
+		this.drawContent();
+	} else {
+		return null;
+	}
+	/*if (this.active) {
+		this.drawHandlers();
+	}*/
+};
+Contour.prototype.drawContour = function() {
+	if (!this.points.length) {
+		return null;
+	}
     beginShape();
-    noFill();
-    vertex(this.points[0].x, this.points[0].y);
+	vertex(this.points[0].x, this.points[0].y);
     for (var i = 0; i < this.points.length; i++) {
         if (i + 1 !== this.points.length) {
             bezierVertex(this.points[i].anchorPoint1.x, this.points[i].anchorPoint1.y, 
@@ -35,6 +56,26 @@ Contour.prototype.draw = function() {
             this.points[0].x, this.points[0].y);
     }
     endShape();
+};
+Contour.prototype.drawContent = function() {
+	if (this.fillColor) {
+		fill(color(this.fillColor.r, this.fillColor.g, this.fillColor.b));
+	}
+	if (this.strokeColor) {
+		stroke(color(this.strokeColor.r, this.strokeColor.g, this.strokeColor.b));
+		strokeWeight(this.strokeWidth);
+	}
+    this.drawContour();
+	strokeWeight(1);
+};
+Contour.prototype.drawHandlers = function() {
+    if (!this.points.length) {
+        return null;
+    }
+    noFill();
+	stroke(0, 0, 0);//TODO: change to a layer color
+	strokeWeight(1);
+    this.drawContour();
     for (var i = 0; i < this.points.length; i++) {
         this.points[i].draw();
     }

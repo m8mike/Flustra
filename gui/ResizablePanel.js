@@ -151,8 +151,5 @@ ResizablePanel.prototype.draw = function() {
 	stroke(0, 0, 0);
 	fill(92, 92, 92);
 	rect(this.x, this.y, this.w, this.h);
-	noFill();
-	stroke(0, 0, 0);
-	rect(this.x + 5, this.y + 15, this.w - 10, this.h - 30);
 	this.checkMouse();
 };

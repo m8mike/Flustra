@@ -29,6 +29,14 @@ List.prototype.resize = function(x, y, w, h) {
         this.scrollBar.size = this.scrollBar.maxSize * this.h / fullLength;
     }
 };
+List.prototype.addContour = function(contour) {
+	this.active.children.push(new Layer(this.active.name + " " + this.active.children.length, this.active));
+	this.active.childrenVisible = true;
+	var layer = this.active.children[this.active.children.length - 1];
+	layer.content = contour;
+	this.layers.splice(this.visibleLayers.indexOf(this.active) + this.active.countChildren(), 0, layer);
+	this.resize(this.x, this.y, this.w, this.h);
+};
 List.prototype.addLayer = function() {
     this.layers.push(new Layer("Layer " + this.layers.length, null));
 	this.resize(this.x, this.y, this.w, this.h);
@@ -61,13 +69,16 @@ List.prototype.deleteAllChildren = function(layer) {
 List.prototype.deleteLayer = function() {
 	var layersToRemove = [];
     for (var i = 0; i < this.visibleLayers.length; i++) {
-		if (this.visibleLayers[i].layerSelected && !this.visibleLayers[i].active) {
+		if (this.visibleLayers[i].layerSelected && !this.visibleLayers[i].active && !this.visibleLayers[i].checkActiveChildren()) {
 			layersToRemove.push(this.visibleLayers[i]);
 		}
 	}
     for (var i = 0; i < layersToRemove.length; i++) {
 		this.deleteAllChildren(layersToRemove[i]);
 	}
+};
+List.prototype.onDoubleClick = function() {
+	//println("double");
 };
 List.prototype.onPressed = function() {
 	if (this.scrollBar.onPressed()) {
@@ -82,6 +93,13 @@ List.prototype.onPressed = function() {
 			if (mouseX < this.x + 20) {
 				if (!layerPressed.active) {
 					layerPressed.contentVisible = !layerPressed.contentVisible;
+					if (layerPressed.content) {
+						layerPressed.content.fixColor();
+						layerPressed.content.active  = false;
+						if (contourManager.contour === layerPressed.content) {
+							contourManager.contour = undefined;
+						}
+					}
 				}
 			} else if (mouseX < this.x + 40) {
 				if (!layerPressed.active) {
@@ -93,6 +111,7 @@ List.prototype.onPressed = function() {
 						this.visibleLayers[i].active = false;
 					}
 					layerPressed.active = true;
+					this.active = layerPressed;
 					layerPressed.contentVisible = true;
 					layerPressed.locked = false;
 				}
@@ -111,6 +130,11 @@ List.prototype.onPressed = function() {
 };
 List.prototype.onReleased = function() {
 	this.scrollBar.onReleased();
+};
+List.prototype.drawContent = function() {
+    for (var i = 0; i < this.layers.length; i++) {
+		this.layers[i].drawContent();
+	}
 };
 List.prototype.draw = function() {
     /*fill(99, 99, 99);
