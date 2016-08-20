@@ -25,7 +25,7 @@ void draw() {
 	if (lp.movingStarted) {
 		lp.resize();
 	}
-	contourManager.update();
+	tools.activeTool.update();
 	colorSelect.update();
 }
 void mousePressed() {
@@ -46,7 +46,7 @@ void mousePressed() {
 		}
 	} else {
 		if (mouseButton === LEFT && !colorSelect.onPressed()) {
-			contourManager.onPressed();
+			tools.activeTool.onPressed();
 		}
 	}
 }
@@ -60,7 +60,7 @@ void mouseReleased() {
 		//var canvas = document.getElementById("canvas");
 		//canvas.style.cursor = "auto";
 	}
-	contourManager.onReleased();
+	tools.activeTool.onReleased();
 	lp.onReleased();
 	if (tools.onReleased()) {
 		return null;
@@ -68,6 +68,9 @@ void mouseReleased() {
 	if (colorSelect.onReleased()) {
 		return null;
 	}
+}
+void mouseClicked() {
+	tools.activeTool.onClicked();
 }
 void mouseOut() {
 	lp.movingStarted = false;

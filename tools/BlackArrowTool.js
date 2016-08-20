@@ -1,6 +1,18 @@
 var BlackArrowTool = function() {
 	
 };
+BlackArrowTool.prototype.onClicked = function() {
+	
+};
+BlackArrowTool.prototype.onPressed = function() {
+	
+};
+BlackArrowTool.prototype.onReleased = function() {
+	
+};
+BlackArrowTool.prototype.update = function() {
+	
+};
 BlackArrowTool.prototype.draw = function(x, y) {
 	pushMatrix();
 	translate(x+5, y+1);

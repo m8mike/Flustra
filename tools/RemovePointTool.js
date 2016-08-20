@@ -1,22 +1,27 @@
-var PenTool = function() {
+var RemovePointTool = function() {
 	
 };
-PenTool.prototype.onClicked = function() {
+RemovePointTool.prototype.onClicked = function() {
 	
 };
-PenTool.prototype.onPressed = function() {
-	contourManager.onPressed();
+RemovePointTool.prototype.onPressed = function() {
+	
 };
-PenTool.prototype.onReleased = function() {
-	contourManager.onReleased();
+RemovePointTool.prototype.onReleased = function() {
+	
 };
-PenTool.prototype.update = function() {
-	contourManager.update();
+RemovePointTool.prototype.update = function() {
+	
 };
-PenTool.prototype.draw = function(x, y) {
+RemovePointTool.prototype.draw = function(x, y) {
 	pushMatrix();
 	translate(x+2, y+1);
 	scale(1.3, 1.3);
+	noStroke();
+	fill(255, 255, 255);
+	rect(-1, 1, 6, 2);
+	//rect(1, -1, 2, 6);
+	stroke(0, 0, 0);
     var canvas = document.getElementById("canvas");
     var ctx = canvas.getContext("2d");
 	// pen/

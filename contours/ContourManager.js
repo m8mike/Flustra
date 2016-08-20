@@ -57,7 +57,6 @@ ContourManager.prototype.onReleased = function() {
     this.contour.setMoving(false);
 };
 ContourManager.prototype.update = function() {
-    //background(255, 255, 255);
 	if (!this.contour) {
 		return null;
 	}

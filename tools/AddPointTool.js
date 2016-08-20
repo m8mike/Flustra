@@ -1,22 +1,27 @@
-var PenTool = function() {
+var AddPointTool = function() {
 	
 };
-PenTool.prototype.onClicked = function() {
+AddPointTool.prototype.onClicked = function() {
 	
 };
-PenTool.prototype.onPressed = function() {
-	contourManager.onPressed();
+AddPointTool.prototype.onPressed = function() {
+	
 };
-PenTool.prototype.onReleased = function() {
-	contourManager.onReleased();
+AddPointTool.prototype.onReleased = function() {
+	
 };
-PenTool.prototype.update = function() {
-	contourManager.update();
+AddPointTool.prototype.update = function() {
+	
 };
-PenTool.prototype.draw = function(x, y) {
+AddPointTool.prototype.draw = function(x, y) {
 	pushMatrix();
 	translate(x+2, y+1);
 	scale(1.3, 1.3);
+	noStroke();
+	fill(255, 255, 255);
+	rect(-1, 1, 6, 2);
+	rect(1, -1, 2, 6);
+	stroke(0, 0, 0);
     var canvas = document.getElementById("canvas");
     var ctx = canvas.getContext("2d");
 	// pen/

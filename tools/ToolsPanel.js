@@ -7,6 +7,8 @@ var ToolsPanel = function(x, y, w, h) {
 	this.whiteArrow = new WhiteArrowTool();
 	this.pen = new PenTool();
 	this.angle = new AngleTool();
+	this.removePoint = new RemovePointTool();
+	this.addPoint = new AddPointTool();
 	this.activeTool = this.pen;
 };
 ToolsPanel.prototype.draw = function() {
@@ -35,6 +37,14 @@ ToolsPanel.prototype.draw = function() {
 			if (this.activeTool !== this.angle) {
 				rect(this.x + 30, this.y + 30, 30, 30);
 			}
+		} else if (mouseX < this.x + 30 && mouseY < this.y + 90) {
+			if (this.activeTool !== this.removePoint) {
+				rect(this.x, this.y + 60, 30, 30);
+			}
+		} else if (mouseY < this.y + 90) {
+			if (this.activeTool !== this.addPoint) {
+				rect(this.x + 30, this.y + 60, 30, 30);
+			}
 		}
 	}
 	fill(71, 0, 112);
@@ -46,11 +56,17 @@ ToolsPanel.prototype.draw = function() {
 		rect(this.x, this.y + 30, 30, 30);
 	} else if (this.activeTool === this.angle) {
 		rect(this.x + 30, this.y + 30, 30, 30);
+	} else if (this.activeTool === this.removePoint) {
+		rect(this.x, this.y + 60, 30, 30);
+	} else if (this.activeTool === this.addPoint) {
+		rect(this.x + 30, this.y + 60, 30, 30);
 	}
 	this.blackArrow.draw(this.x + 5, this.y + 5);
 	this.whiteArrow.draw(this.x + 35, this.y + 5);
 	this.pen.draw(this.x + 5, this.y + 35);
 	this.angle.draw(this.x + 35, this.y + 35);
+	this.removePoint.draw(this.x + 5, this.y + 65);
+	this.addPoint.draw(this.x + 35, this.y + 65);
 };
 ToolsPanel.prototype.checkMouse = function() {
 	if (mouseX > this.x && mouseX < (this.x + this.w) && mouseY > this.y && mouseY < (this.y + this.h)) {
@@ -70,6 +86,10 @@ ToolsPanel.prototype.onReleased = function() {
 			this.activeTool = this.pen;
 		} else if (mouseY < this.y + 60) {
 			this.activeTool = this.angle;
+		} else if (mouseX < this.x + 30 && mouseY < this.y + 90) {
+			this.activeTool = this.removePoint;
+		} else if (mouseY < this.y + 90) {
+			this.activeTool = this.addPoint;
 		}
 		return true;
 	}
