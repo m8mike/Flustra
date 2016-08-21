@@ -1,17 +1,18 @@
-var AddPointTool = function() {
-	
+var AddPointTool = function(x, y) {
+	Tool.call(this, x, y);
 };
+AddPointTool.prototype = Object.create(Tool.prototype);
 AddPointTool.prototype.onClicked = function() {
 	
 };
 AddPointTool.prototype.onPressed = function() {
-	
+	Tool.prototype.onPressed.call(this);
 };
 AddPointTool.prototype.onReleased = function() {
-	
+	Tool.prototype.onReleased.call(this);
 };
 AddPointTool.prototype.update = function() {
-	
+	Tool.prototype.update.call(this);
 };
 AddPointTool.prototype.draw = function(x, y) {
 	pushMatrix();

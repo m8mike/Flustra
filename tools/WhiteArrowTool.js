@@ -1,10 +1,12 @@
-var WhiteArrowTool = function() {
+var WhiteArrowTool = function(x, y) {
+	Tool.call(this, x, y);
     this.start = {x:0, y:0};
     this.finish = {x:0, y:0};
     this.selectionStarted = false;
     this.movingPoint = null;
     this.movingAnchor = null;
 };
+WhiteArrowTool.prototype = Object.create(Tool.prototype);
 WhiteArrowTool.prototype.checkSelection = function() {
 	if (!contourManager.contour) {
 		return null;
@@ -26,6 +28,9 @@ WhiteArrowTool.prototype.checkSelection = function() {
     }
 };
 WhiteArrowTool.prototype.checkPointsToMove = function() {
+	if (!contourManager.contour) {
+		return false;
+	}
 	var units = contourManager.contour.points;
     for (var i = 0; i < units.length; i++) {
         if (dist(units[i].x, units[i].y, mouseX, mouseY) < 8) {
@@ -38,6 +43,9 @@ WhiteArrowTool.prototype.checkPointsToMove = function() {
 	return false;
 };
 WhiteArrowTool.prototype.checkAnchorsToMove = function() {
+	if (!contourManager.contour) {
+		return false;
+	}
 	var units = contourManager.contour.points;
     for (var i = 0; i < units.length; i++) {
         if (dist(units[i].anchorPoint1.x, units[i].anchorPoint1.y, mouseX, mouseY) < 8 && units[i].anchorPoint1.visible) {
@@ -66,6 +74,9 @@ WhiteArrowTool.prototype.normalize = function() {
     }
 };
 WhiteArrowTool.prototype.onClicked = function() {
+	if (!contourManager.contour) {
+		return null;
+	}
 	var units = contourManager.contour.points;
     for (var i = 0; i < units.length; i++) {
 		if (dist(units[i].x, units[i].y, mouseX, mouseY) < 8) {
@@ -86,6 +97,7 @@ WhiteArrowTool.prototype.onClicked = function() {
 	}
 };
 WhiteArrowTool.prototype.onPressed = function() {
+	Tool.prototype.onPressed.call(this);
     if (!this.selectionStarted) {
 		if (this.checkPointsToMove()) {
 			return null;
@@ -100,6 +112,7 @@ WhiteArrowTool.prototype.onPressed = function() {
     }
 };
 WhiteArrowTool.prototype.onReleased = function() {
+	Tool.prototype.onReleased.call(this);
 	if (this.movingPoint) {
 		this.movingPoint.anchorPoint1.x += mouseX - this.start.x;
 		this.movingPoint.anchorPoint1.y += mouseY - this.start.y;
@@ -127,6 +140,10 @@ WhiteArrowTool.prototype.onReleased = function() {
 	}
 };
 WhiteArrowTool.prototype.update = function() {
+	Tool.prototype.update.call(this);
+	if (tools.activeTool !== this) {
+		return null;
+	}
 	if (this.selectionStarted) {
 		this.finish.x = mouseX;
 		this.finish.y = mouseY;
@@ -146,6 +163,9 @@ WhiteArrowTool.prototype.update = function() {
 		return null;
 	} else if (this.movingAnchor) {
 		
+		return null;
+	}
+	if (!contourManager.contour) {
 		return null;
 	}
 	var units = contourManager.contour.points;

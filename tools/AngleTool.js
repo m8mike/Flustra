@@ -1,10 +1,12 @@
-var AngleTool = function() {
-	
+var AngleTool = function(x, y) {
+	Tool.call(this, x, y);
 };
+AngleTool.prototype = Object.create(Tool.prototype);
 AngleTool.prototype.onClicked = function() {
 	
 };
 AngleTool.prototype.onPressed = function() {
+	Tool.prototype.onPressed.call(this);
 	var contour = contourManager.contour;
 	if (!contour) {
 		return null;
@@ -29,10 +31,12 @@ AngleTool.prototype.onPressed = function() {
 	} 
 };
 AngleTool.prototype.onReleased = function() {
+	Tool.prototype.onReleased.call(this);
 	this.activePoint = null;
 	this.activeAnchor = null;
 };
 AngleTool.prototype.update = function() {
+	Tool.prototype.update.call(this);
 	if (this.activePoint) {
         this.activePoint.updateAnchors(mouseX, mouseY);
 	} else if (this.activeAnchor) {
@@ -56,6 +60,7 @@ AngleTool.prototype.draw = function(x, y) {
 	ctx.lineTo(1.2, 12.5);
 	ctx.lineTo(1.2, 0.6);
 	ctx.closePath();
+	ctx.fillStyle = "rgb(71, 0, 112)";
 	ctx.fill();
 	ctx.lineWidth = 0.3;
 	ctx.strokeStyle = "rgb(255, 255, 255)";

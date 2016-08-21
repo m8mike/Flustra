@@ -5,6 +5,7 @@ var Navigator = function(x, y, w, h) {
 	this.h = h;
 	this.movingStarted = false;
 	this.sideMoving = '';
+	this.camera = new Camera();
 };
 Navigator.prototype = Object.create(ResizablePanel.prototype);
 Navigator.prototype.draw = function() {
@@ -13,6 +14,11 @@ Navigator.prototype.draw = function() {
 };
 Navigator.prototype.resize = function() {
     ResizablePanel.prototype.resize.call(this);//call superclass method
+};
+Navigator.prototype.checkMouse = function() {
+	if (mouseX > this.x && mouseX < (this.x + this.w) && mouseY > this.y && mouseY < (this.y + this.h)) {
+		return true;
+	}
 };
 Navigator.prototype.onPressed = function() {
 	

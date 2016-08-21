@@ -1,17 +1,18 @@
-var RemovePointTool = function() {
-	
+var RemovePointTool = function(x, y) {
+	Tool.call(this, x, y);
 };
+RemovePointTool.prototype = Object.create(Tool.prototype);
 RemovePointTool.prototype.onClicked = function() {
 	
 };
 RemovePointTool.prototype.onPressed = function() {
-	
+	Tool.prototype.onPressed.call(this);
 };
 RemovePointTool.prototype.onReleased = function() {
-	
+	Tool.prototype.onReleased.call(this);
 };
 RemovePointTool.prototype.update = function() {
-	
+	Tool.prototype.update.call(this);
 };
 RemovePointTool.prototype.draw = function(x, y) {
 	pushMatrix();

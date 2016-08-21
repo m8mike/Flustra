@@ -1,16 +1,20 @@
-var PenTool = function() {
-	
+var PenTool = function(x, y) {
+	Tool.call(this, x, y);
 };
+PenTool.prototype = Object.create(Tool.prototype);
 PenTool.prototype.onClicked = function() {
 	
 };
 PenTool.prototype.onPressed = function() {
+	Tool.prototype.onPressed.call(this);
 	contourManager.onPressed();
 };
 PenTool.prototype.onReleased = function() {
+	Tool.prototype.onReleased.call(this);
 	contourManager.onReleased();
 };
 PenTool.prototype.update = function() {
+	Tool.prototype.update.call(this);
 	contourManager.update();
 };
 PenTool.prototype.draw = function(x, y) {
