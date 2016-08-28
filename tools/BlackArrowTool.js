@@ -1,11 +1,22 @@
 var BlackArrowTool = function(x, y) {
 	Tool.call(this, x, y);
+	this.start = null;
 };
 BlackArrowTool.prototype = Object.create(Tool.prototype);
-BlackArrowTool.prototype.onClicked = function() {
-	
-};
+/*BlackArrowTool.prototype.onClicked = function() {
+	for (var i = lp.list.layers.length - 1; i >= 0; i--) {
+		var layer = lp.list.layers[i];
+		if (layer.locked || !layer.contentVisible || !layer.content) {
+			continue;
+		}
+		if (layer.content.isPointInContour(getMouseX(), getMouseY())) {
+			contourManager.setActive(layer.content);
+			return null;
+		}
+	}
+};*/
 BlackArrowTool.prototype.onPressed = function() {
+	this.start = {x:getMouseX(), y:getMouseY()};
 	Tool.prototype.onPressed.call(this);
 };
 BlackArrowTool.prototype.onReleased = function() {
@@ -14,7 +25,10 @@ BlackArrowTool.prototype.onReleased = function() {
 BlackArrowTool.prototype.update = function() {
 	Tool.prototype.update.call(this);
 };
-BlackArrowTool.prototype.draw = function(x, y) {
+BlackArrowTool.prototype.draw = function() {
+	Tool.prototype.draw.call(this);
+	var x = this.x + 5;
+	var y = this.y + 5;
 	pushMatrix();
 	translate(x+5, y+1);
 	scale(1.3, 1.3);

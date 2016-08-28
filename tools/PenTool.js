@@ -17,7 +17,10 @@ PenTool.prototype.update = function() {
 	Tool.prototype.update.call(this);
 	contourManager.update();
 };
-PenTool.prototype.draw = function(x, y) {
+PenTool.prototype.draw = function() {
+	Tool.prototype.draw.call(this);
+	var x = this.x + 5;
+	var y = this.y + 5;
 	pushMatrix();
 	translate(x+2, y+1);
 	scale(1.3, 1.3);

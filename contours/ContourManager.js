@@ -1,6 +1,16 @@
 var ContourManager = function() {
 	
 };
+ContourManager.prototype.setActive = function(contour) {
+	if (this.contour) {
+		this.contour.active = false;
+		this.contour.fixColor();
+	}
+	this.contour = contour;
+	this.contour.active = true;
+	colorSelect.setFillColor(this.contour.fillColor.r, this.contour.fillColor.g, this.contour.fillColor.b);
+	colorSelect.setStrokeColor(this.contour.strokeColor.r, this.contour.strokeColor.g, this.contour.strokeColor.b);
+};
 ContourManager.prototype.addContour = function() {
 	if (this.contour) {
 		this.contour.active = false;
@@ -18,7 +28,7 @@ ContourManager.prototype.onPressed = function() {
         if (!contour.points.length) {
             return null;
         }
-        if (dist(contour.points[0].x, contour.points[0].y, mouseX, mouseY) < 4) {
+        if (dist(contour.points[0].x, contour.points[0].y, getMouseX(), getMouseY()) < 4) {
             contour.points.splice(0, 1);
             if (contour.points.length <= 1) {
                 contour.closed = false;
@@ -28,18 +38,18 @@ ContourManager.prototype.onPressed = function() {
 		this.addContour();
 		contour = this.contour;
     } else if (contour.points.length === 1) {
-        if (dist(contour.points[0].x, contour.points[0].y, mouseX, mouseY) < 4) {
+        if (dist(contour.points[0].x, contour.points[0].y, getMouseX(), getMouseY()) < 4) {
             contour.points.splice(0, 1);
             return null;
         }
     } else if (contour.points.length > 1) {
-        if (dist(contour.points[0].x, contour.points[0].y, mouseX, mouseY) < 4) {
+        if (dist(contour.points[0].x, contour.points[0].y, getMouseX(), getMouseY()) < 4) {
             contour.closed = true;
             return null;
         }
     }
     for (var i = 1; i < contour.points.length; i++) {
-        if (dist(contour.points[i].x, contour.points[i].y, mouseX, mouseY) < 4) {
+        if (dist(contour.points[i].x, contour.points[i].y, getMouseX(), getMouseY()) < 4) {
             contour.points.splice(i, 1);
             if (contour.points.length === 1) {
                 contour.closed = false;
@@ -47,7 +57,7 @@ ContourManager.prototype.onPressed = function() {
             return null;
         }
     }
-    contour.add(mouseX, mouseY);
+    contour.add(getMouseX(), getMouseY());
     contour.setMoving(true);
 };
 ContourManager.prototype.onReleased = function() {
@@ -62,6 +72,6 @@ ContourManager.prototype.update = function() {
 	}
 	var contour = this.contour;
     if (contour.isMoving()) {
-        contour.updateAnchors(mouseX, mouseY);
+        contour.updateAnchors(getMouseX(), getMouseY());
     }
 };

@@ -3,7 +3,19 @@ var RemovePointTool = function(x, y) {
 };
 RemovePointTool.prototype = Object.create(Tool.prototype);
 RemovePointTool.prototype.onClicked = function() {
-	
+	if (!contourManager.contour) {
+		return null;
+	}
+	var contour = contourManager.contour;
+    for (var i = 0; i < contour.points.length; i++) {
+        if (dist(contour.points[i].x, contour.points[i].y, getMouseX(), getMouseY()) < 4) {
+            contour.points.splice(i, 1);
+            if (contour.points.length === 1) {
+                contour.closed = false;
+            }
+            return null;
+        }
+    }
 };
 RemovePointTool.prototype.onPressed = function() {
 	Tool.prototype.onPressed.call(this);
@@ -14,7 +26,10 @@ RemovePointTool.prototype.onReleased = function() {
 RemovePointTool.prototype.update = function() {
 	Tool.prototype.update.call(this);
 };
-RemovePointTool.prototype.draw = function(x, y) {
+RemovePointTool.prototype.draw = function() {
+	Tool.prototype.draw.call(this);
+	var x = this.x + 5;
+	var y = this.y + 5;
 	pushMatrix();
 	translate(x+2, y+1);
 	scale(1.3, 1.3);

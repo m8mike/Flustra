@@ -36,6 +36,28 @@ Contour.prototype.draw = function() {
 		this.drawHandlers();
 	}*/
 };
+Contour.prototype.isPointInContour = function(x, y) {
+	if (!this.points.length) {
+		return false;
+	}
+    var canvas = document.getElementById("canvas");
+    var ctx = canvas.getContext("2d");
+	ctx.beginPath();
+	ctx.moveTo(this.points[0].x, this.points[0].y);
+    for (var i = 0; i < this.points.length - 1; i++) {
+		ctx.bezierCurveTo(this.points[i].anchorPoint1.x, this.points[i].anchorPoint1.y, 
+					this.points[i+1].anchorPoint2.x, this.points[i+1].anchorPoint2.y, 
+					this.points[i+1].x, this.points[i+1].y);
+	}
+	if (this.closed) {
+		var last = this.points.length - 1;
+        ctx.bezierCurveTo(this.points[last].anchorPoint1.x, this.points[last].anchorPoint1.y, 
+            this.points[0].anchorPoint2.x, this.points[0].anchorPoint2.y, 
+            this.points[0].x, this.points[0].y);
+	}
+	ctx.closePath();
+	return ctx.isPointInPath(x, y);
+};
 Contour.prototype.drawContour = function() {
 	if (!this.points.length) {
 		return null;

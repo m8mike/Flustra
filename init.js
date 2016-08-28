@@ -45,13 +45,18 @@ void mousePressed() {
 			}
 		}
 	} else {
-		if (mouseButton === LEFT && !colorSelect.onPressed()) {
+		if (colorSelect.onPressed()) {
+			
+		} else if (mouseButton === LEFT) {
 			tools.activeTool.onPressed();
+		} else if (mouseButton === RIGHT) {
+			tools.activeTool.onRightPressed();
 		}
 	}
 }
 void mouseReleased() {
-	if (mouseButton !== LEFT) {
+	if (mouseButton === RIGHT) {
+		tools.activeTool.onRightReleased();
 		return null;
 	}
 	if (lp.movingStarted) {
@@ -75,4 +80,10 @@ void mouseClicked() {
 void mouseOut() {
 	lp.movingStarted = false;
 	lp.sideMoving = '';
+}
+float getMouseX() {
+	return nav.camera.scaleRatio * (mouseX - nav.camera.x);
+}
+float getMouseY() {
+	return nav.camera.scaleRatio * (mouseY - nav.camera.y);
 }

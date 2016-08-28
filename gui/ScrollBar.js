@@ -67,6 +67,9 @@ ScrollBar.prototype.adjustPos = function() {
 		this.offsetY = (this.h - this.listHeight)/((this.maxSize - this.size)/this.maxSize)*this.pos;
 	}
 }
+ScrollBar.prototype.isVisible = function() {
+	return this.size !== this.maxSize;
+};
 ScrollBar.prototype.draw = function() {
     if (this.movingStarted) {
 		this.pos = this.lastPos + (mouseY - this.startOfTheMovement)/this.maxSize;

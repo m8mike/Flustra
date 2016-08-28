@@ -80,51 +80,56 @@ List.prototype.deleteLayer = function() {
 List.prototype.onDoubleClick = function() {
 	//println("double");
 };
+List.prototype.checkMouse = function() {
+	if (mouseX > this.x && mouseX < this.x + this.w && 
+		mouseY > this.y && mouseY < this.y + this.h) {
+		return true;
+	}
+	return false;
+};
 List.prototype.onPressed = function() {
-	if (this.scrollBar.onPressed()) {
+	if (this.scrollBar.isVisible() && this.scrollBar.onPressed()) {
 		
-	} else if (mouseX > this.x && mouseX < this.x + this.w) {
-		if (mouseY > this.y && mouseY < this.y + this.h) {
-			var offset = mouseY - this.y + Math.abs(this.scrollBar.offsetY);
-			var layerPressed = this.visibleLayers[int((offset - (offset % 20)) / 20)];
-			if (!layerPressed) {
-				return null;
+	} else if (this.checkMouse()) {
+		var offset = mouseY - this.y + Math.abs(this.scrollBar.offsetY);
+		var layerPressed = this.visibleLayers[int((offset - (offset % 20)) / 20)];
+		if (!layerPressed) {
+			return null;
+		}
+		if (mouseX < this.x + 20) {
+			if (!layerPressed.active) {
+				layerPressed.contentVisible = !layerPressed.contentVisible;
+				if (layerPressed.content) {
+					layerPressed.content.fixColor();
+					layerPressed.content.active  = false;
+					if (contourManager.contour === layerPressed.content) {
+						contourManager.contour = undefined;
+					}
+				}
 			}
-			if (mouseX < this.x + 20) {
-				if (!layerPressed.active) {
-					layerPressed.contentVisible = !layerPressed.contentVisible;
-					if (layerPressed.content) {
-						layerPressed.content.fixColor();
-						layerPressed.content.active  = false;
-						if (contourManager.contour === layerPressed.content) {
-							contourManager.contour = undefined;
-						}
-					}
-				}
-			} else if (mouseX < this.x + 40) {
-				if (!layerPressed.active) {
-					layerPressed.locked = !layerPressed.locked;
-				}
-			} else if (mouseX < this.x + 60) {
-				if (!layerPressed.active) {
-					for (var i = 0; i < this.visibleLayers.length; i++) {
-						this.visibleLayers[i].active = false;
-					}
-					layerPressed.active = true;
-					this.active = layerPressed;
-					layerPressed.contentVisible = true;
-					layerPressed.locked = false;
-				}
-			} else if (layerPressed.children.length > 0 &&
-						mouseX > this.x + 70 + layerPressed.countParents() * 20 && 
-						mouseX < this.x + 90 + layerPressed.countParents() * 20) {
-				layerPressed.setChildrenVisible(!layerPressed.childrenVisible);
-			} else {
+		} else if (mouseX < this.x + 40) {
+			if (!layerPressed.active) {
+				layerPressed.locked = !layerPressed.locked;
+			}
+		} else if (mouseX < this.x + 60) {
+			if (!layerPressed.active) {
 				for (var i = 0; i < this.visibleLayers.length; i++) {
-					this.visibleLayers[i].layerSelected = false;
+					this.visibleLayers[i].active = false;
 				}
-				layerPressed.layerSelected = true;
+				layerPressed.active = true;
+				this.active = layerPressed;
+				layerPressed.contentVisible = true;
+				layerPressed.locked = false;
 			}
+		} else if (layerPressed.children.length > 0 &&
+					mouseX > this.x + 70 + layerPressed.countParents() * 20 && 
+					mouseX < this.x + 90 + layerPressed.countParents() * 20) {
+			layerPressed.setChildrenVisible(!layerPressed.childrenVisible);
+		} else {
+			for (var i = 0; i < this.visibleLayers.length; i++) {
+				this.visibleLayers[i].layerSelected = false;
+			}
+			layerPressed.layerSelected = true;
 		}
 	}
 };

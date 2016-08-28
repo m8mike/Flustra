@@ -26,10 +26,14 @@ var LayersPanel = function(x, y, w, h) {
 };
 LayersPanel.prototype = Object.create(ResizablePanel.prototype);
 LayersPanel.prototype.draw = function() {
+	pushMatrix();
+	translate(nav.camera.x, nav.camera.y);
+	scale(1/nav.camera.scaleRatio);
 	this.list.drawContent();
 	if (contourManager && contourManager.contour) {
 		contourManager.contour.drawHandlers();
 	}
+	popMatrix();
 	ResizablePanel.prototype.draw.call(this);//call superclass method
 	noFill();
 	stroke(0, 0, 0);

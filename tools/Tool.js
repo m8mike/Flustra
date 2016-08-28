@@ -8,10 +8,10 @@ Tool.prototype.checkMouse = function() {
 	}
 	return false;
 };
-Tool.prototype.draw = function() {
-	
+Tool.prototype.setActive = function() {
+	tools.activeTool = this;
 };
-Tool.prototype.update = function() {
+Tool.prototype.draw = function() {
 	if (tools.activeTool === this) {
 		fill(71, 0, 112);
 		rect(this.x, this.y, 30, 30);
@@ -23,7 +23,9 @@ Tool.prototype.update = function() {
 		}
 		rect(this.x, this.y, 30, 30);
 	}
-	this.draw(this.x + 5, this.y + 5);
+};
+Tool.prototype.update = function() {
+	
 };
 Tool.prototype.onReleased = function() {
 	

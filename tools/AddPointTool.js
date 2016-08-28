@@ -14,7 +14,10 @@ AddPointTool.prototype.onReleased = function() {
 AddPointTool.prototype.update = function() {
 	Tool.prototype.update.call(this);
 };
-AddPointTool.prototype.draw = function(x, y) {
+AddPointTool.prototype.draw = function() {
+	Tool.prototype.draw.call(this);
+	var x = this.x + 5;
+	var y = this.y + 5;
 	pushMatrix();
 	translate(x+2, y+1);
 	scale(1.3, 1.3);
