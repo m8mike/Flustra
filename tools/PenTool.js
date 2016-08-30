@@ -1,5 +1,6 @@
 var PenTool = function(x, y) {
 	Tool.call(this, x, y);
+	this.toolName = "Pen tool";
 };
 PenTool.prototype = Object.create(Tool.prototype);
 PenTool.prototype.onClicked = function() {

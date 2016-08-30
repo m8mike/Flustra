@@ -12,10 +12,12 @@ var ToolsPanel = function(x, y, w, h) {
 	this.tools.push(new AngleTool(this.x + 30, this.y + 30));
 	this.tools.push(new RemovePointTool(this.x, this.y + 60));
 	this.tools.push(new AddPointTool(this.x + 30, this.y + 60));
-	this.tools.push(new UndoTool(this.x, this.y + 90));
-	this.tools.push(new RedoTool(this.x + 30, this.y + 90));
-	this.tools.push(new SaveTool(this.x, this.y + 120));
-	this.tools.push(new LoadTool(this.x + 30, this.y + 120));
+	this.tools.push(new PictureTool(this.x, this.y + 90));
+	this.tools.push(new FreeTransformTool(this.x + 30, this.y + 90));
+	this.tools.push(new UndoTool(this.x, this.y + 120));
+	this.tools.push(new RedoTool(this.x + 30, this.y + 120));
+	this.tools.push(new SaveTool(this.x, this.y + 150));
+	this.tools.push(new LoadTool(this.x + 30, this.y + 150));
 };
 ToolsPanel.prototype.draw = function() {
 	stroke(0, 0, 0);

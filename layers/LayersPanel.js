@@ -66,6 +66,9 @@ LayersPanel.prototype.resize = function() {
     this.deleteLayerButton.y = this.y + this.h - 14;
 	this.list.resize(this.x + 5, this.y + 15, this.w - 10, this.h - 30);
 };
+LayersPanel.prototype.onClicked = function() {
+	this.list.onClicked();
+};
 LayersPanel.prototype.onPressed = function() {
     this.newLayerButton.onPressed();
     this.newSublayerButton.onPressed();

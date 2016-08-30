@@ -3,6 +3,8 @@ var Contour = function() {
     this.closed = false;
 	this.fillColor = colorSelect.fillColor;
 	this.strokeColor = colorSelect.strokeColor;
+	this.fillEnabled = colorSelect.fillEnabled;
+	this.strokeEnabled = colorSelect.strokeEnabled;
 	this.strokeWidth = 5;
 	this.active = true;
 	this.visible = true;
@@ -80,15 +82,20 @@ Contour.prototype.drawContour = function() {
     endShape();
 };
 Contour.prototype.drawContent = function() {
-	if (this.fillColor) {
+	if (this.fillColor && this.fillEnabled) {
 		fill(color(this.fillColor.r, this.fillColor.g, this.fillColor.b));
+	} else {
+		noFill();
 	}
-	if (this.strokeColor) {
+	if (this.strokeColor && this.strokeEnabled) {
 		stroke(color(this.strokeColor.r, this.strokeColor.g, this.strokeColor.b));
 		strokeWeight(this.strokeWidth);
+	} else {
+		noStroke();
 	}
     this.drawContour();
 	strokeWeight(1);
+	stroke(0, 0, 0);
 };
 Contour.prototype.drawHandlers = function() {
     if (!this.points.length) {

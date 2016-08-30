@@ -1,5 +1,6 @@
 var RemovePointTool = function(x, y) {
 	Tool.call(this, x, y);
+	this.toolName = "Remove point";
 };
 RemovePointTool.prototype = Object.create(Tool.prototype);
 RemovePointTool.prototype.onClicked = function() {

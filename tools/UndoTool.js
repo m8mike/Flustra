@@ -1,5 +1,6 @@
 var UndoTool = function(x, y) {
 	Tool.call(this, x, y);
+	this.toolName = "Undo";
 };
 UndoTool.prototype = Object.create(Tool.prototype);
 UndoTool.prototype.onClicked = function() {

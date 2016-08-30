@@ -1,5 +1,6 @@
 var LoadTool = function(x, y) {
 	Tool.call(this, x, y);
+	this.toolName = "Load";
 };
 LoadTool.prototype = Object.create(Tool.prototype);
 LoadTool.prototype.onClicked = function() {

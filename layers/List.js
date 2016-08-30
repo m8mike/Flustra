@@ -87,6 +87,29 @@ List.prototype.checkMouse = function() {
 	}
 	return false;
 };
+List.prototype.deactivateLayer = function(layer) {
+	if (layer.content) {
+		layer.content.fixColor();
+		layer.content.active  = false;
+		if (contourManager.contour === layer.content) {
+			contourManager.contour = undefined;
+		}
+	}
+};
+List.prototype.mouseOnEye = function() {
+	return mouseX > this.x && mouseX < this.x + 20;
+};
+List.prototype.mouseOnLock = function() {
+	return mouseX > this.x + 20 && mouseX < this.x + 40;
+};
+List.prototype.mouseOnCheckMark = function() {
+	return mouseX > this.x + 40 && mouseX < this.x + 60;
+};
+List.prototype.mouseOnTriangle = function(layer) {
+	return layer.children.length > 0 &&
+			mouseX > this.x + 70 + layer.countParents() * 20 && 
+			mouseX < this.x + 90 + layer.countParents() * 20;
+};
 List.prototype.onPressed = function() {
 	if (this.scrollBar.isVisible() && this.scrollBar.onPressed()) {
 		
@@ -96,22 +119,21 @@ List.prototype.onPressed = function() {
 		if (!layerPressed) {
 			return null;
 		}
-		if (mouseX < this.x + 20) {
+		if (this.mouseOnEye()) {
 			if (!layerPressed.active) {
 				layerPressed.contentVisible = !layerPressed.contentVisible;
-				if (layerPressed.content) {
-					layerPressed.content.fixColor();
-					layerPressed.content.active  = false;
-					if (contourManager.contour === layerPressed.content) {
-						contourManager.contour = undefined;
-					}
-				}
+				this.setVisible = layerPressed.contentVisible;
+				this.setVisibleStarted = true;
+				this.deactivateLayer(layerPressed);
 			}
-		} else if (mouseX < this.x + 40) {
+		} else if (this.mouseOnLock()) {
 			if (!layerPressed.active) {
 				layerPressed.locked = !layerPressed.locked;
+				this.setLocked = layerPressed.locked;
+				this.setLockedStarted = true;
+				this.deactivateLayer(layerPressed);
 			}
-		} else if (mouseX < this.x + 60) {
+		} else if (this.mouseOnCheckMark()) {
 			if (!layerPressed.active) {
 				for (var i = 0; i < this.visibleLayers.length; i++) {
 					this.visibleLayers[i].active = false;
@@ -121,9 +143,7 @@ List.prototype.onPressed = function() {
 				layerPressed.contentVisible = true;
 				layerPressed.locked = false;
 			}
-		} else if (layerPressed.children.length > 0 &&
-					mouseX > this.x + 70 + layerPressed.countParents() * 20 && 
-					mouseX < this.x + 90 + layerPressed.countParents() * 20) {
+		} else if (this.mouseOnTriangle(layerPressed)) {
 			layerPressed.setChildrenVisible(!layerPressed.childrenVisible);
 		} else {
 			for (var i = 0; i < this.visibleLayers.length; i++) {
@@ -133,15 +153,46 @@ List.prototype.onPressed = function() {
 		}
 	}
 };
+List.prototype.onClicked = function() {
+	if (!this.checkMouse) {
+		return null;
+	}
+};
 List.prototype.onReleased = function() {
 	this.scrollBar.onReleased();
+	this.setVisibleStarted = false;
+	this.setLockedStarted = false;
 };
 List.prototype.drawContent = function() {
     for (var i = 0; i < this.layers.length; i++) {
 		this.layers[i].drawContent();
 	}
 };
+List.prototype.onOver = function() {
+	if (this.checkMouse() && (this.setVisibleStarted || this.setLockedStarted)) {
+		var offset = mouseY - this.y + Math.abs(this.scrollBar.offsetY);
+		var layer = this.visibleLayers[int((offset - (offset % 20)) / 20)];
+		if (!layer) {
+			return null;
+		}
+		if (layer.active) {
+			return null;
+		}
+		if (mouseX < this.x + 20 && this.setVisibleStarted) {
+			layer.contentVisible = this.setVisible;
+			if (!this.setVisible) {
+				this.deactivateLayer(layer);
+			}
+		} else if (mouseX < this.x + 40 && this.setLockedStarted) {
+			layer.locked = this.setLocked;
+			if (this.setLocked) {
+				this.deactivateLayer(layer);
+			}
+		}
+	}
+};
 List.prototype.draw = function() {
+	this.onOver();
     /*fill(99, 99, 99);
     rect(this.x, this.y, this.w, this.h);*/
     pushMatrix();

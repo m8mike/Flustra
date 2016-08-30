@@ -1,5 +1,6 @@
 var HandTool = function(x, y) {
 	Tool.call(this, x, y);
+	this.toolName = "Hand tool";
 	this.start = {x:0, y:0};
 	this.movingStarted = false;
 	this.scalingStarted = false;

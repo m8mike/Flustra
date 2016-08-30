@@ -1,5 +1,6 @@
 var AddPointTool = function(x, y) {
 	Tool.call(this, x, y);
+	this.toolName = "Add point";
 };
 AddPointTool.prototype = Object.create(Tool.prototype);
 AddPointTool.prototype.onClicked = function() {

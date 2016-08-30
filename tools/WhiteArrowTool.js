@@ -1,5 +1,6 @@
 var WhiteArrowTool = function(x, y) {
 	Tool.call(this, x, y);
+	this.toolName = "White arrow tool";
     this.start = {x:0, y:0};
     this.finish = {x:0, y:0};
     this.selectionStarted = false;
@@ -88,8 +89,22 @@ WhiteArrowTool.prototype.normalize = function() {
         this.finish.y = finishY;
     }
 };
+WhiteArrowTool.prototype.checkLayersToActivate = function() {
+	for (var i = lp.list.layers.length - 1; i >= 0; i--) {
+		var layer = lp.list.layers[i];
+		if (layer.locked || !layer.contentVisible || !layer.content) {
+			continue;
+		}
+		var contour = layer.content;
+		if (contour.isPointInContour(getMouseX(), getMouseY())) {
+			contourManager.setActive(contour);
+			return null;
+		}
+	}
+};
 WhiteArrowTool.prototype.onClicked = function() {
 	if (!contourManager.contour) {
+		this.checkLayersToActivate();
 		return null;
 	}
 	var units = contourManager.contour.points;
@@ -110,17 +125,7 @@ WhiteArrowTool.prototype.onClicked = function() {
 			return null;
 		}
 	}
-	for (var i = lp.list.layers.length - 1; i >= 0; i--) {
-		var layer = lp.list.layers[i];
-		if (layer.locked || !layer.contentVisible || !layer.content) {
-			continue;
-		}
-		var contour = layer.content;
-		if (contour.isPointInContour(getMouseX(), getMouseY())) {
-			contourManager.setActive(contour);
-			return null;
-		}
-	}
+	this.checkLayersToActivate();
 };
 WhiteArrowTool.prototype.onPressed = function() {
 	Tool.prototype.onPressed.call(this);

@@ -10,6 +10,10 @@ ContourManager.prototype.setActive = function(contour) {
 	this.contour.active = true;
 	colorSelect.setFillColor(this.contour.fillColor.r, this.contour.fillColor.g, this.contour.fillColor.b);
 	colorSelect.setStrokeColor(this.contour.strokeColor.r, this.contour.strokeColor.g, this.contour.strokeColor.b);
+	this.contour.fillColor = colorSelect.fillColor;
+	this.contour.strokeColor = colorSelect.strokeColor;
+	this.contour.fillEnabled = colorSelect.fillEnabled;
+	this.contour.strokeEnabled = colorSelect.strokeEnabled;
 };
 ContourManager.prototype.addContour = function() {
 	if (this.contour) {

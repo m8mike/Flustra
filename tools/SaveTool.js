@@ -1,5 +1,6 @@
 var SaveTool = function(x, y) {
 	Tool.call(this, x, y);
+	this.toolName = "Save";
 };
 SaveTool.prototype = Object.create(Tool.prototype);
 SaveTool.prototype.onClicked = function() {

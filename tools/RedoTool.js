@@ -1,5 +1,6 @@
 var RedoTool = function(x, y) {
 	Tool.call(this, x, y);
+	this.toolName = "Redo";
 };
 RedoTool.prototype = Object.create(Tool.prototype);
 RedoTool.prototype.onClicked = function() {

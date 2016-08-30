@@ -1,5 +1,6 @@
 var AngleTool = function(x, y) {
 	Tool.call(this, x, y);
+	this.toolName = "Angle tool";
 };
 AngleTool.prototype = Object.create(Tool.prototype);
 AngleTool.prototype.onClicked = function() {
