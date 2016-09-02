@@ -32,6 +32,7 @@ ToolsPanel.prototype.checkMouse = function() {
 	if (mouseX > this.x && mouseX < (this.x + this.w) && mouseY > this.y && mouseY < (this.y + this.h)) {
 		return true;
 	}
+	return false;
 }
 ToolsPanel.prototype.onPressed = function() {
 	return this.checkMouse();

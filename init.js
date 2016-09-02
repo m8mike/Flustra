@@ -29,6 +29,10 @@ void draw() {
 	colorSelect.update();
 }
 void mousePressed() {
+	if (mouseButton === RIGHT) {
+		tools.activeTool.onRightPressed();
+		return null;
+	}
 	var resizeOffset = 5;
 	if (tools.onPressed()) {
 		
@@ -75,7 +79,9 @@ void mouseReleased() {
 	}
 }
 void mouseClicked() {
-	tools.activeTool.onClicked();
+	if (!tools.checkMouse() && !lp.checkMouse() && !colorSelect.checkMouse()) {
+		tools.activeTool.onClicked();
+	}
 }
 void mouseOut() {
 	lp.movingStarted = false;

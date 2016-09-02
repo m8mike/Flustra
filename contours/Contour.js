@@ -10,8 +10,8 @@ var Contour = function() {
 	this.visible = true;
 };
 Contour.prototype.setColor = function(f, s) {
-	this.fillColor = {r:f.r, g:f.g, b:f.b};
-	this.strokeColor = {r:s.r, g:s.g, b:s.b};
+	this.fillColor = {r:f.r, g:f.g, b:f.b, a:f.a};
+	this.strokeColor = {r:s.r, g:s.g, b:s.b, a:s.a};
 };
 Contour.prototype.fixColor = function() {
 	this.setColor(this.fillColor, this.strokeColor);
@@ -83,12 +83,12 @@ Contour.prototype.drawContour = function() {
 };
 Contour.prototype.drawContent = function() {
 	if (this.fillColor && this.fillEnabled) {
-		fill(color(this.fillColor.r, this.fillColor.g, this.fillColor.b));
+		fill(color(this.fillColor.r, this.fillColor.g, this.fillColor.b, this.fillColor.a));
 	} else {
 		noFill();
 	}
 	if (this.strokeColor && this.strokeEnabled) {
-		stroke(color(this.strokeColor.r, this.strokeColor.g, this.strokeColor.b));
+		stroke(color(this.strokeColor.r, this.strokeColor.g, this.strokeColor.b, this.strokeColor.a));
 		strokeWeight(this.strokeWidth);
 	} else {
 		noStroke();
@@ -108,6 +108,39 @@ Contour.prototype.drawHandlers = function() {
     for (var i = 0; i < this.points.length; i++) {
         this.points[i].draw();
     }
+};
+//Generates a LookUp Table of coordinates on the curve
+Contour.prototype.getLUT = function() {
+	var LUT = [];
+	if (this.points.length <= 1) {
+		return LUT;
+	}
+	var steps = 100;
+	for (var j = 0; j < this.points.length - 1; j++) {
+		var p1 = this.points[j];
+		var p2 = this.points[j].anchorPoint1;
+		var p3 = this.points[j+1].anchorPoint2;
+		var p4 = this.points[j+1];
+		for (var i = 1; i < steps; i++) {
+			var t = i / steps;
+			var x = bezierPoint(p1.x, p2.x, p3.x, p4.x, t);
+			var y = bezierPoint(p1.y, p2.y, p3.y, p4.y, t);
+			LUT.push({x:x, y:y, i:j, t:i});
+		}
+	}
+	if (this.closed) {
+		var p1 = this.points[this.points.length - 1];
+		var p2 = this.points[this.points.length - 1].anchorPoint1;
+		var p3 = this.points[0].anchorPoint2;
+		var p4 = this.points[0];
+		for (var i = 1; i < steps; i++) {
+			var t = i / steps;
+			var x = bezierPoint(p1.x, p2.x, p3.x, p4.x, t);
+			var y = bezierPoint(p1.y, p2.y, p3.y, p4.y, t);
+			LUT.push({x:x, y:y, i:this.points.length - 1, t:i});
+		}
+	}
+	return LUT;
 };
 Contour.prototype.getLastPoint = function() {
     if (this.points.length <= 0) {

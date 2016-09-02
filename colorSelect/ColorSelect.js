@@ -1,6 +1,6 @@
 var ColorSelect = function() {
-	this.fillColor = {r:255, g:255, b:0};
-	this.strokeColor = {r:0, g:255, b:0};
+	this.fillColor = {r:255, g:255, b:0, a:255};
+	this.strokeColor = {r:0, g:255, b:0, a:255};
 	this.fillEnabled = true;
 	this.strokeEnabled = true;
 	this.switchColors = new SwitchColors(100, window.innerHeight - 150);
@@ -10,7 +10,8 @@ ColorSelect.prototype.draw = function() {
 	if (this.strokeEnabled) {
 		stroke(0, 0, 0);
 		strokeWeight(1);
-		fill(color(this.strokeColor.r, this.strokeColor.g, this.strokeColor.b));
+		//fill(color(this.strokeColor.r, this.strokeColor.g, this.strokeColor.b));
+		fill(this.strokeColor.r, this.strokeColor.g, this.strokeColor.b, this.strokeColor.a);
 		rect(0, window.innerHeight - 150, 100, 100);
 	} else {
 		stroke(0, 0, 0);
@@ -24,7 +25,8 @@ ColorSelect.prototype.draw = function() {
 	if (this.fillEnabled) {
 		stroke(0, 0, 0);
 		strokeWeight(1);
-		fill(color(this.fillColor.r, this.fillColor.g, this.fillColor.b));
+		//fill(color(this.fillColor.r, this.fillColor.g, this.fillColor.b));
+		fill(this.fillColor.r, this.fillColor.g, this.fillColor.b, this.fillColor.a);
 		rect(50, window.innerHeight - 100, 100, 100);
 	} else {
 		stroke(0, 0, 0);
@@ -67,15 +69,17 @@ function rgbToHex(r, g, b) {
 function colorToString(col) {
 	return rgbToHex(col.r, col.g, col.b);
 }
-ColorSelect.prototype.setFillColor = function(r, g, b) {
+ColorSelect.prototype.setFillColor = function(r, g, b, a) {
 	this.fillColor.r = r;
 	this.fillColor.g = g;
 	this.fillColor.b = b;
+	this.fillColor.a = a;
 };
-ColorSelect.prototype.setStrokeColor = function(r, g, b) {
+ColorSelect.prototype.setStrokeColor = function(r, g, b, a) {
 	this.strokeColor.r = r;
 	this.strokeColor.g = g;
 	this.strokeColor.b = b;
+	this.strokeColor.a = a;
 };
 ColorSelect.prototype.update = function() {
 	this.draw();
@@ -103,6 +107,20 @@ ColorSelect.prototype.setStrokeEnabled = function(enabled) {
 	if (contourManager.contour) {
 		contourManager.contour.strokeEnabled = enabled;
 	}
+};
+ColorSelect.prototype.checkMouse = function() {
+	if (mouseX > 50 && mouseX < 70 && mouseY > window.innerHeight - 20 && mouseY < window.innerHeight) {
+		return true;
+	} else if (mouseX > 50 && mouseX < 150 && mouseY > window.innerHeight - 100 && mouseY < window.innerHeight) {
+		return true;
+	} else if (mouseX > 0 && mouseX < 20 && mouseY > window.innerHeight - 70 && mouseY < window.innerHeight - 50) {
+		return true;
+	} else if (mouseX > 0 && mouseX < 100 && mouseY > window.innerHeight - 150 && mouseY < window.innerHeight - 50) {
+		return true;
+	} else if (this.defaultColors.checkMouse() || this.switchColors.checkMouse()) {
+		return true;
+	}
+	return false;
 };
 ColorSelect.prototype.onReleased = function() {
 	if (mouseX > 50 && mouseX < 70 && mouseY > window.innerHeight - 20 && mouseY < window.innerHeight) {

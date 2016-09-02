@@ -74,6 +74,7 @@ List.prototype.deleteLayer = function() {
 		}
 	}
     for (var i = 0; i < layersToRemove.length; i++) {
+		this.deactivateLayer(layersToRemove[i]);
 		this.deleteAllChildren(layersToRemove[i]);
 	}
 };

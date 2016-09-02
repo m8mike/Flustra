@@ -69,6 +69,12 @@ LayersPanel.prototype.resize = function() {
 LayersPanel.prototype.onClicked = function() {
 	this.list.onClicked();
 };
+LayersPanel.prototype.checkMouse = function() {
+	if (mouseX > this.x && mouseX < (this.x + this.w) && mouseY > this.y && mouseY < (this.y + this.h)) {
+		return true;
+	}
+	return false;
+};
 LayersPanel.prototype.onPressed = function() {
     this.newLayerButton.onPressed();
     this.newSublayerButton.onPressed();

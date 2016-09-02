@@ -1,6 +1,6 @@
 var WhiteArrowTool = function(x, y) {
 	Tool.call(this, x, y);
-	this.toolName = "White arrow tool";
+	this.toolName = "Arrow tool (to edit points)";
     this.start = {x:0, y:0};
     this.finish = {x:0, y:0};
     this.selectionStarted = false;
@@ -15,18 +15,18 @@ WhiteArrowTool.prototype.checkSelection = function() {
 	if (!contourManager.contour) {
 		return null;
 	}
-	var units = contourManager.contour.points;
-    for (var i = 0; i < units.length; i++) {
-        if (units[i].x > this.start.x && units[i].x < this.finish.x && 
-            units[i].y > this.start.y && units[i].y < this.finish.y) {
+	var points = contourManager.contour.points;
+    for (var i = 0; i < points.length; i++) {
+        if (points[i].x > this.start.x && points[i].x < this.finish.x && 
+            points[i].y > this.start.y && points[i].y < this.finish.y) {
 			if (keyPressed && keyCode === CONTROL) {
-				units[i].deselect();
+				points[i].deselect();
 			} else {
-				units[i].select();
+				points[i].select();
 			}
         } else {
 			if (!(keyPressed && (keyCode === CONTROL || keyCode === SHIFT))) {
-				units[i].deselect();
+				points[i].deselect();
 			}
         }
     }
@@ -216,8 +216,8 @@ WhiteArrowTool.prototype.update = function() {
 			fill(255, 255, 255);
 			stroke(0, 0, 0);
 			strokeWeight(1);
-			rect(1/nav.camera.scaleRatio * (units[i].x - 4) + nav.camera.x, 
-				 1/nav.camera.scaleRatio * (units[i].y - 4) + nav.camera.y, 8, 8);
+			rect(1 / nav.camera.scaleRatio * (units[i].x - 4) + nav.camera.x, 
+				 1 / nav.camera.scaleRatio * (units[i].y - 4) + nav.camera.y, 8, 8);
 			return null;
 		}
 	}

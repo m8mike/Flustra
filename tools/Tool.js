@@ -38,7 +38,13 @@ Tool.prototype.draw = function() {
 	}
 };
 Tool.prototype.update = function() {
-	
+	tools.tools[1].update();
+};
+Tool.prototype.onRightReleased = function() {
+	tools.tools[1].onReleased();
+};
+Tool.prototype.onRightPressed = function() {
+	tools.tools[1].onPressed();
 };
 Tool.prototype.onReleased = function() {
 	

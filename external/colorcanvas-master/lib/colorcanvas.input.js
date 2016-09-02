@@ -159,7 +159,7 @@
 
     PickerPopup.prototype.save = function() {
 	  var res = this.picker.color;
-	  this.callback.call(this.target, res.r, res.g, res.b);
+	  this.callback.call(this.target, res.r, res.g, res.b, res.a*255);
     };
 
     PickerPopup.prototype.close = function() {

@@ -16,8 +16,8 @@ HandTool.prototype.onRightPressed = function() {
 	}
 };
 HandTool.prototype.onPressed = function() {
-	Tool.prototype.onPressed.call(this);
-	if (mouseButton === LEFT && !this.movingStarted) {
+	//Tool.prototype.onPressed.call(this);
+	if (!this.movingStarted) {
 		this.movingStarted = true;
 		this.start.x = getMouseX();
 		this.start.y = getMouseY();
@@ -31,7 +31,7 @@ HandTool.prototype.onRightReleased = function() {
 	}
 };
 HandTool.prototype.onReleased = function() {
-	Tool.prototype.onReleased.call(this);
+	//Tool.prototype.onReleased.call(this);
 	if (this.movingStarted) {
 		this.movingStarted = false;
 		nav.camera.x += (getMouseX() - this.start.x)/nav.camera.scaleRatio;
@@ -41,7 +41,7 @@ HandTool.prototype.onReleased = function() {
 	}
 };
 HandTool.prototype.update = function() {
-	Tool.prototype.update.call(this);
+	//Tool.prototype.update.call(this);
 	if (this.scalingStarted) {
 		nav.camera.scaleRatio += (mouseY - this.start.y) / window.innerHeight;
 		this.start.y = mouseY;

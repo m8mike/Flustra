@@ -4,7 +4,37 @@ var AddPointTool = function(x, y) {
 };
 AddPointTool.prototype = Object.create(Tool.prototype);
 AddPointTool.prototype.onClicked = function() {
-	
+	var contour = contourManager.contour;
+	if (!contour) {
+		return null;
+	}
+	var lut = contour.getLUT();
+	if (!lut.length) {
+		return null;
+	}
+	var p = this.findClosest(lut);
+	var p0 = contour.points[p.i];
+	var p1 = contour.points[p.i].anchorPoint1;
+	var p2, p3;
+	if (p.i === contour.points.length - 1 && contour.closed) {
+		p2 = contour.points[0].anchorPoint2;
+		p3 = contour.points[0];
+	} else {
+		p2 = contour.points[p.i + 1].anchorPoint2;
+		p3 = contour.points[p.i + 1];
+	}
+	var p3x = p2.x * p.t + p1.x * (1 - p.t);
+	var p3y = p2.y * p.t + p1.y * (1 - p.t);
+	p1.x = p1.x * p.t + p0.x * (1 - p.t);
+	p1.y = p1.y * p.t + p0.y * (1 - p.t);
+	p2.x = p3.x * p.t + p2.x * (1 - p.t);
+	p2.y = p3.y * p.t + p2.y * (1 - p.t);
+	contour.points.splice(p.i + 1, 0, new ContourPoint(p.x, p.y));
+	var point = contour.points[p.i + 1];
+	point.anchorPoint2.x = p3x * p.t + p1.x * (1 - p.t);
+	point.anchorPoint2.y = p3y * p.t + p1.y * (1 - p.t);
+	point.anchorPoint1.x = p2.x * p.t + p3x * (1 - p.t);
+	point.anchorPoint1.y = p2.y * p.t + p3y * (1 - p.t);
 };
 AddPointTool.prototype.onPressed = function() {
 	Tool.prototype.onPressed.call(this);
@@ -12,8 +42,42 @@ AddPointTool.prototype.onPressed = function() {
 AddPointTool.prototype.onReleased = function() {
 	Tool.prototype.onReleased.call(this);
 };
+AddPointTool.prototype.findClosest = function(LUT) {
+	if (!LUT.length) {
+		return null;
+	}
+	var p = {x:getMouseX(), y:getMouseY()};
+    var d,
+        dd = dist(LUT[0].x, LUT[0].y, p.x, p.y),
+        f = 0, ff = 0;
+    for (var i = 1; i < LUT.length; i++) {
+		d = dist(LUT[i].x, LUT[i].y, p.x, p.y);
+		if (d < dd) {
+			f = i;
+			ff = LUT[i].t;
+			dd = d;
+		}
+    }
+	ellipse(1 / nav.camera.scaleRatio * LUT[f].x + nav.camera.x, 
+			1 / nav.camera.scaleRatio * LUT[f].y + nav.camera.y, 10, 10);
+	var point = {};
+	point.x = LUT[f].x;
+	point.y = LUT[f].y;
+	point.t = ff/99;
+	point.i = LUT[f].i;
+    return point;
+};
 AddPointTool.prototype.update = function() {
 	Tool.prototype.update.call(this);
+	var contour = contourManager.contour;
+	if (!contour) {
+		return null;
+	}
+	var lut = contour.getLUT();
+	if (!lut.length) {
+		return null;
+	}
+	var p = this.findClosest(lut);
 };
 AddPointTool.prototype.draw = function() {
 	Tool.prototype.draw.call(this);
