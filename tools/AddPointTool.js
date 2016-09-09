@@ -31,6 +31,7 @@ AddPointTool.prototype.onClicked = function() {
 	p2.y = p3.y * p.t + p2.y * (1 - p.t);
 	contour.points.splice(p.i + 1, 0, new ContourPoint(p.x, p.y));
 	var point = contour.points[p.i + 1];
+	point.select();
 	point.anchorPoint2.x = p3x * p.t + p1.x * (1 - p.t);
 	point.anchorPoint2.y = p3y * p.t + p1.y * (1 - p.t);
 	point.anchorPoint1.x = p2.x * p.t + p3x * (1 - p.t);

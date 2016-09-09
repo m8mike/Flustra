@@ -9,6 +9,24 @@ var Contour = function() {
 	this.active = true;
 	this.visible = true;
 };
+Contour.prototype.clone = function() {
+	var contour = new Contour();
+	for (var i = 0; i < this.points.length; i++) {
+		contour.points.push(new ContourPoint(this.points[i].x, this.points[i].y));
+		contour.points[i].anchorPoint1.x = this.points[i].anchorPoint1.x;
+		contour.points[i].anchorPoint1.y = this.points[i].anchorPoint1.y;
+		contour.points[i].anchorPoint2.x = this.points[i].anchorPoint2.x;
+		contour.points[i].anchorPoint2.y = this.points[i].anchorPoint2.y;
+	}
+	contour.closed = this.closed;
+	contour.setColor(this.fillColor, this.strokeColor);
+	contour.fillEnabled = this.fillEnabled;
+	contour.strokeEnabled = this.strokeEnabled;
+	contour.strokeWidth = this.strokeWidth;
+	contour.active = false;
+	contour.visible = true;
+	return contour;
+};
 Contour.prototype.setColor = function(f, s) {
 	this.fillColor = {r:f.r, g:f.g, b:f.b, a:f.a};
 	this.strokeColor = {r:s.r, g:s.g, b:s.b, a:s.a};

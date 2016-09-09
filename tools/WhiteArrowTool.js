@@ -1,6 +1,6 @@
 var WhiteArrowTool = function(x, y) {
 	Tool.call(this, x, y);
-	this.toolName = "Arrow tool (to edit points)";
+	this.toolName = "White arrow (to edit points)";
     this.start = {x:0, y:0};
     this.finish = {x:0, y:0};
     this.selectionStarted = false;

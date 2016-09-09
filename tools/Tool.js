@@ -38,13 +38,13 @@ Tool.prototype.draw = function() {
 	}
 };
 Tool.prototype.update = function() {
-	tools.tools[1].update();
+	tools.hand.update();
 };
 Tool.prototype.onRightReleased = function() {
-	tools.tools[1].onReleased();
+	tools.hand.onReleased();
 };
 Tool.prototype.onRightPressed = function() {
-	tools.tools[1].onPressed();
+	tools.hand.onPressed();
 };
 Tool.prototype.onReleased = function() {
 	

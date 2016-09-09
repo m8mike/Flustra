@@ -1,6 +1,7 @@
 var BlackArrowTool = function(x, y) {
 	Tool.call(this, x, y);
 	this.start = null;
+	this.toolName = "Black arrow (to edit contours)";
 };
 BlackArrowTool.prototype = Object.create(Tool.prototype);
 /*BlackArrowTool.prototype.onClicked = function() {

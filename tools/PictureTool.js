@@ -1,6 +1,6 @@
 var PictureTool = function(x, y) {
 	Tool.call(this, x, y);
-	this.toolName = "Place image (Picture tool)";
+	this.toolName = "Place image";
 };
 PictureTool.prototype = Object.create(Tool.prototype);
 PictureTool.prototype.onClicked = function() {

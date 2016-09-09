@@ -4,11 +4,11 @@ var List = function(x, y, w, h) {
     this.w = w;
     this.h = h;
     this.layers = [];
-    this.visibleLayers = [];
 	this.scrollBar = new ScrollBar(x + w - 5, y, h);
 	this.addLayer();
 	this.active = this.layers[0];
 	this.layers[0].active = true;
+	this.layerMoving = null;
 };
 List.prototype.resize = function(x, y, w, h) {
     this.x = x;
@@ -34,7 +34,18 @@ List.prototype.addContour = function(contour) {
 	this.active.childrenVisible = true;
 	var layer = this.active.children[this.active.children.length - 1];
 	layer.content = contour;
-	this.layers.splice(this.visibleLayers.indexOf(this.active) + this.active.countChildren(), 0, layer);
+	this.resize(this.x, this.y, this.w, this.h);
+};
+List.prototype.copyLayer = function(layer, parent, index) {
+	if (parent) {
+		//this.layers.splice(index, 0, layer.clone(parent));
+		parent.children.push(layer.clone(parent));
+		var index = this.layers.indexOf(parent) + parent.children.length;
+		this.layers.splice(index, 0, parent.children[parent.children.length-1]);
+		parent.childrenVisible = true;
+	} else {
+		this.layers.splice(index, 0, layer.clone(parent));
+	}
 	this.resize(this.x, this.y, this.w, this.h);
 };
 List.prototype.addLayer = function() {
@@ -42,13 +53,11 @@ List.prototype.addLayer = function() {
 	this.resize(this.x, this.y, this.w, this.h);
 };
 List.prototype.addSublayer = function() {
-	for (var i = 0; i < this.visibleLayers.length; i++) {
-		if (this.visibleLayers[i].layerSelected) {
-			this.visibleLayers[i].childrenVisible = true;
-			this.visibleLayers[i].children.push(new Layer(this.visibleLayers[i].name 
-				+ " " + this.visibleLayers[i].children.length, this.visibleLayers[i]));
-			var layer = this.visibleLayers[i].children[this.visibleLayers[i].children.length - 1];
-			this.layers.splice(i + this.visibleLayers[i].countChildren(), 0, layer);
+	var layers = this.getVisibleLayers();
+	for (var i = 0; i < layers.length; i++) {
+		if (layers[i].layerSelected) {
+			layers[i].childrenVisible = true;
+			layers[i].children.push(new Layer(layers[i].name + " " + layers[i].children.length, layers[i]));
 			this.resize(this.x, this.y, this.w, this.h);
 			return null;
 		}
@@ -59,22 +68,21 @@ List.prototype.deleteAllChildren = function(layer) {
 		this.deleteAllChildren(layer.children[i]);
 	}
 	layer.remove();
-	if (this.visibleLayers.indexOf(layer) != -1) {
-		this.visibleLayers.splice(this.visibleLayers.indexOf(layer), 1);
-	}
 	if (this.layers.indexOf(layer) != -1) {
 		this.layers.splice(this.layers.indexOf(layer), 1);
 	}
 };
 List.prototype.deleteLayer = function() {
 	var layersToRemove = [];
-    for (var i = 0; i < this.visibleLayers.length; i++) {
-		if (this.visibleLayers[i].layerSelected && !this.visibleLayers[i].active && !this.visibleLayers[i].checkActiveChildren()) {
-			layersToRemove.push(this.visibleLayers[i]);
+	var layers = this.getVisibleLayers();
+    for (var i = 0; i < layers.length; i++) {
+		if (layers[i].isVisible() && layers[i].layerSelected && 
+			!layers[i].active && !layers[i].checkActiveChildren()) {
+			layersToRemove.push(layers[i]);
 		}
 	}
     for (var i = 0; i < layersToRemove.length; i++) {
-		this.deactivateLayer(layersToRemove[i]);
+		layersToRemove[i].deactivate();
 		this.deleteAllChildren(layersToRemove[i]);
 	}
 };
@@ -88,78 +96,86 @@ List.prototype.checkMouse = function() {
 	}
 	return false;
 };
-List.prototype.deactivateLayer = function(layer) {
-	if (layer.content) {
-		layer.content.fixColor();
-		layer.content.active  = false;
-		if (contourManager.contour === layer.content) {
-			contourManager.contour = undefined;
-		}
+List.prototype.getVisibleLayers = function() {
+	var visibleLayers = [];
+	for (var i = 0; i < this.layers.length; i++) {
+		visibleLayers = visibleLayers.concat(this.layers[i].getVisibleChildren());
 	}
-};
-List.prototype.mouseOnEye = function() {
-	return mouseX > this.x && mouseX < this.x + 20;
-};
-List.prototype.mouseOnLock = function() {
-	return mouseX > this.x + 20 && mouseX < this.x + 40;
-};
-List.prototype.mouseOnCheckMark = function() {
-	return mouseX > this.x + 40 && mouseX < this.x + 60;
-};
-List.prototype.mouseOnTriangle = function(layer) {
-	return layer.children.length > 0 &&
-			mouseX > this.x + 70 + layer.countParents() * 20 && 
-			mouseX < this.x + 90 + layer.countParents() * 20;
+	return visibleLayers;
 };
 List.prototype.onPressed = function() {
 	if (this.scrollBar.isVisible() && this.scrollBar.onPressed()) {
 		
 	} else if (this.checkMouse()) {
 		var offset = mouseY - this.y + Math.abs(this.scrollBar.offsetY);
-		var layerPressed = this.visibleLayers[int((offset - (offset % 20)) / 20)];
+		var visibleLayers = this.getVisibleLayers();
+		var layerPressed = visibleLayers[int((offset - (offset % 20)) / 20)];
 		if (!layerPressed) {
 			return null;
 		}
-		if (this.mouseOnEye()) {
-			if (!layerPressed.active) {
-				layerPressed.contentVisible = !layerPressed.contentVisible;
-				this.setVisible = layerPressed.contentVisible;
-				this.setVisibleStarted = true;
-				this.deactivateLayer(layerPressed);
-			}
-		} else if (this.mouseOnLock()) {
-			if (!layerPressed.active) {
-				layerPressed.locked = !layerPressed.locked;
-				this.setLocked = layerPressed.locked;
-				this.setLockedStarted = true;
-				this.deactivateLayer(layerPressed);
-			}
-		} else if (this.mouseOnCheckMark()) {
-			if (!layerPressed.active) {
-				for (var i = 0; i < this.visibleLayers.length; i++) {
-					this.visibleLayers[i].active = false;
-				}
-				layerPressed.active = true;
-				this.active = layerPressed;
-				layerPressed.contentVisible = true;
-				layerPressed.locked = false;
-			}
-		} else if (this.mouseOnTriangle(layerPressed)) {
-			layerPressed.setChildrenVisible(!layerPressed.childrenVisible);
-		} else {
-			for (var i = 0; i < this.visibleLayers.length; i++) {
-				this.visibleLayers[i].layerSelected = false;
-			}
-			layerPressed.layerSelected = true;
-		}
+		var list = this;
+		layerPressed.onPressed(list);
 	}
 };
 List.prototype.onClicked = function() {
-	if (!this.checkMouse) {
+	if (!this.checkMouse()) {
 		return null;
 	}
 };
+List.prototype.dragLayer = function(layer, parent, index, copy) {
+	if (copy) {
+		this.copyLayer(layer, parent, index);
+	} else {
+		layer.setParent(parent, index);
+	}
+};
 List.prototype.onReleased = function() {
+	if (this.checkMouse()) {
+		var offset = mouseY - this.y + Math.abs(this.scrollBar.offsetY);
+		var visibleLayers = this.getVisibleLayers();
+		var layerOverIndex = int((offset - (offset % 20)) / 20);
+		var layerOver = visibleLayers[layerOverIndex];
+		if (!this.layerMoving) {
+			return null;
+		}
+		if (layerOver && (layerOver !== this.layerMoving) && !(layerOver.isChildOf(this.layerMoving))) {
+			//this.layerMoving.removeParent();
+		}
+		var copy = keyPressed && keyCode === ALT;
+		if (!layerOver) {
+			this.dragLayer(this.layerMoving, null, this.layers.length, copy);
+		} else if (layerOver === this.layerMoving || layerOver.isChildOf(this.layerMoving)) {
+			return null;
+		} else if (offset % 20 > 5 && offset % 20 < 15) {
+			this.dragLayer(this.layerMoving, layerOver, layerOver.children.length, copy);
+		} else if (offset % 20 <= 5) {
+			if (layerOver.parent) {
+				this.dragLayer(this.layerMoving, layerOver.parent, layerOver.parent.children.indexOf(layerOver), copy);
+			} else {
+				this.layerMoving.removeParent();
+				this.dragLayer(this.layerMoving, null, this.layers.indexOf(layerOver), copy);
+			}
+		} else if (offset % 20 >= 15) {
+			if (layerOverIndex == visibleLayers.length - 1) {
+				if (layerOver.parent) {
+					this.dragLayer(this.layerMoving, layerOver.parent, layerOver.parent.children.indexOf(layerOver)+1, copy);
+				} else {
+					this.dragLayer(this.layerMoving, null, this.layers.length, copy);
+				}
+			} else if (layerOver.children.length > 0 && layerOver.childrenVisible) {
+				this.dragLayer(this.layerMoving, layerOver, 0, copy);
+			} else if (layerOver.parent) {
+				this.dragLayer(this.layerMoving, layerOver.parent, layerOver.parent.children.indexOf(layerOver)+1, copy);
+			} else if (visibleLayers[layerOverIndex+1].parent) {
+				this.dragLayer(this.layerMoving, visibleLayers[layerOverIndex+1].parent, 
+								visibleLayers[layerOverIndex+1].parent.children.indexOf(layerOver)+1, copy);
+			} else {
+				this.layerMoving.removeParent();
+				this.dragLayer(this.layerMoving, null, this.layers.indexOf(layerOver)+1, copy);
+			}
+		}
+	}
+	this.layerMoving = null;
 	this.scrollBar.onReleased();
 	this.setVisibleStarted = false;
 	this.setLockedStarted = false;
@@ -170,9 +186,46 @@ List.prototype.drawContent = function() {
 	}
 };
 List.prototype.onOver = function() {
-	if (this.checkMouse() && (this.setVisibleStarted || this.setLockedStarted)) {
+	if (!this.checkMouse()) {
+		this.layerMoving = null;
+		return null;
+	}
+	if (this.layerMoving) {
+		if (!mousePressed) {
+			this.layerMoving = null;
+			return null;
+		}
 		var offset = mouseY - this.y + Math.abs(this.scrollBar.offsetY);
-		var layer = this.visibleLayers[int((offset - (offset % 20)) / 20)];
+		var visibleLayers = this.getVisibleLayers();
+		var layerOver = visibleLayers[int((offset - (offset % 20)) / 20)];
+		if (layerOver) {
+			noFill();
+			stroke(0, 255, 0);
+			if (offset % 20 > 5 && offset % 20 < 15) {
+				rect(this.x, this.y + visibleLayers.indexOf(layerOver) * 20 + this.scrollBar.offsetY, this.w, 20);
+			} else if (offset % 20 <= 5) {
+				var x = this.x;
+				var y = this.y + visibleLayers.indexOf(layerOver) * 20 + this.scrollBar.offsetY;
+				line(x, y, x + this.w, y);
+			} else if (offset % 20 >= 15) {
+				var x = this.x;
+				var y = this.y + visibleLayers.indexOf(layerOver) * 20 + this.scrollBar.offsetY;
+				line(x, y + 20, x + this.w, y + 20);
+			}
+			stroke(0, 0, 0);
+		} else {
+			noFill();
+			stroke(0, 255, 0);
+			var x = this.x;
+			var y = this.y + visibleLayers.length * 20 + this.scrollBar.offsetY;
+			line(x, y, x + this.w, y);
+			stroke(0, 0, 0);
+		}
+	}
+	if (this.setVisibleStarted || this.setLockedStarted) {
+		var offset = mouseY - this.y + Math.abs(this.scrollBar.offsetY);
+		var visibleLayers = this.getVisibleLayers();
+		var layer = visibleLayers[int((offset - (offset % 20)) / 20)];
 		if (!layer) {
 			return null;
 		}
@@ -182,18 +235,17 @@ List.prototype.onOver = function() {
 		if (mouseX < this.x + 20 && this.setVisibleStarted) {
 			layer.contentVisible = this.setVisible;
 			if (!this.setVisible) {
-				this.deactivateLayer(layer);
+				layer.deactivate();
 			}
 		} else if (mouseX < this.x + 40 && this.setLockedStarted) {
 			layer.locked = this.setLocked;
 			if (this.setLocked) {
-				this.deactivateLayer(layer);
+				layer.deactivate();
 			}
 		}
 	}
 };
 List.prototype.draw = function() {
-	this.onOver();
     /*fill(99, 99, 99);
     rect(this.x, this.y, this.w, this.h);*/
     pushMatrix();
@@ -202,13 +254,12 @@ List.prototype.draw = function() {
     ctx.beginPath();
     ctx.rect(this.x, this.y, this.w, this.h);
     ctx.clip();
-	this.visibleLayers = [];
-    for (var i = 0; i < this.layers.length; i++) {
-		if (this.layers[i].draw(this.x, this.y + this.visibleLayers.length * 20 + this.scrollBar.offsetY, this.w, 20)) {
-			this.visibleLayers.push(this.layers[i]);
-		}
+	var visibleLayers = this.getVisibleLayers();
+    for (var i = 0; i < visibleLayers.length; i++) {
+		visibleLayers[i].draw(this.x, this.y + i * 20 + this.scrollBar.offsetY, this.w, 20);
     }
-	this.scrollBar.listHeight = this.visibleLayers.length * 20;
+	this.scrollBar.listHeight = visibleLayers.length * 20;
     popMatrix();
     this.scrollBar.draw();
+	this.onOver();
 };
