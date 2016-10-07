@@ -13,7 +13,7 @@ Tool.prototype.setActive = function() {
 };
 Tool.prototype.showHint = function() {
 	if (this.toolName) {
-		fill(0, 255, 0, 100);
+		fill(0, 255, 0, 200);
 		noStroke();
 		rect(60, this.y+5, textWidth(this.toolName) + 10, 20);
 		fill(0, 0, 0);

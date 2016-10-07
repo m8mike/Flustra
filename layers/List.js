@@ -29,6 +29,13 @@ List.prototype.resize = function(x, y, w, h) {
         this.scrollBar.size = this.scrollBar.maxSize * this.h / fullLength;
     }
 };
+List.prototype.addImage = function(image) {
+	this.active.children.push(new Layer("Image " + this.active.name + " " + this.active.children.length, this.active));
+	this.active.childrenVisible = true;
+	var layer = this.active.children[this.active.children.length - 1];
+	layer.content = image;
+	this.resize(this.x, this.y, this.w, this.h);
+};
 List.prototype.addContour = function(contour) {
 	this.active.children.push(new Layer(this.active.name + " " + this.active.children.length, this.active));
 	this.active.childrenVisible = true;
@@ -55,7 +62,7 @@ List.prototype.addLayer = function() {
 List.prototype.addSublayer = function() {
 	var layers = this.getVisibleLayers();
 	for (var i = 0; i < layers.length; i++) {
-		if (layers[i].layerSelected) {
+		if (layers[i].layerSelected && !(layers[i].content instanceof ImageContent)) {
 			layers[i].childrenVisible = true;
 			layers[i].children.push(new Layer(layers[i].name + " " + layers[i].children.length, layers[i]));
 			this.resize(this.x, this.y, this.w, this.h);
@@ -88,6 +95,15 @@ List.prototype.deleteLayer = function() {
 };
 List.prototype.onDoubleClick = function() {
 	//println("double");
+	var _this = lp.list;
+	var offset = mouseY - _this.y + Math.abs(_this.scrollBar.offsetY);
+	var visibleLayers = _this.getVisibleLayers();
+	var layerPressed = visibleLayers[int((offset - (offset % 20)) / 20)];
+	if (!layerPressed) {
+		return null;
+	}
+	this.ps = new LayerPopup({color: colorToString(layerPressed.color), name: layerPressed.name}, layerPressed.setColor, layerPressed);
+	this.ps.open({left: window.innerWidth - _this.w - 470, top:_this.y});
 };
 List.prototype.checkMouse = function() {
 	if (mouseX > this.x && mouseX < this.x + this.w && 
@@ -102,6 +118,13 @@ List.prototype.getVisibleLayers = function() {
 		visibleLayers = visibleLayers.concat(this.layers[i].getVisibleChildren());
 	}
 	return visibleLayers;
+};
+List.prototype.getAllLayers = function() {
+	var layers = [];
+	for (var i = 0; i < this.layers.length; i++) {
+		layers = layers.concat(this.layers[i].getAllChildren());
+	}
+	return layers;
 };
 List.prototype.onPressed = function() {
 	if (this.scrollBar.isVisible() && this.scrollBar.onPressed()) {

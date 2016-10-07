@@ -13,8 +13,16 @@ var Layer = function(name, parent) {
 	this.locked = false;
 	this.active = false;
 	
-	this.color = color(random(0, 255), random(0, 255), random(0, 255));
+	this.color = {r:parseInt(random(0, 255)), g:parseInt(random(0, 255)), b:parseInt(random(0, 255)), a:255};
 	this.children = [];
+};
+Layer.prototype.setColor = function(r, g, b, name) {
+	this.color.r = r;
+	this.color.g = g;
+	this.color.b = b;
+	if (name) {
+		this.name = name;
+	}
 };
 Layer.prototype.isChildOf = function(parent) {
 	if (!this.parent) {
@@ -58,7 +66,9 @@ Layer.prototype.clone = function(parent) {
 };
 Layer.prototype.deactivate = function() {
 	if (this.content) {
-		this.content.fixColor();
+		if (this.content instanceof Contour) {
+			this.content.fixColor();
+		}
 		this.content.active  = false;
 		if (contourManager.contour === this.content) {
 			contourManager.contour = undefined;
@@ -119,6 +129,14 @@ Layer.prototype.isVisible = function() {
 	}
 	return this.parent.isVisible();
 };
+Layer.prototype.getAllChildren = function() {
+	var children = [];
+	children.push(this);
+	for (var i = 0; i < this.children.length; i++) {
+		children = children.concat(this.children[i].getAllChildren());
+	}
+	return children;
+};
 Layer.prototype.getVisibleChildren = function() {
 	var visibleChildren = [];
 	if (this.isVisible()) {
@@ -177,7 +195,7 @@ Layer.prototype.checkActiveMark = function(list) {
 	if (!(mouseX > list.x + 40 && mouseX < list.x + 60)) {
 		return false;
 	}
-	if (!this.active) {
+	if (!this.active && !(this.content instanceof ImageContent)) {
 		for (var i = 0; i < list.layers.length; i++) {
 			list.layers[i].active = false;
 		}

@@ -3,8 +3,28 @@ var PictureTool = function(x, y) {
 	this.toolName = "Place image";
 };
 PictureTool.prototype = Object.create(Tool.prototype);
+PictureTool.prototype.onLoaded = function(file) {
+	if (!file) {
+		return null;
+	}
+	if (file instanceof Image) {
+		lp.list.addImage(new ImageContent(file));
+		return null;
+	}
+	var reader = new FileReader();
+    reader.onload = function(e){
+		var img = new Image();
+		img.onload = function() {
+			lp.list.addImage(new ImageContent(img));
+			//canvas.width = img.width;
+			//canvas.height = img.height;
+		}
+		img.src = e.target.result;
+	}
+    reader.readAsDataURL(file);
+};
 PictureTool.prototype.onClicked = function() {
-	var img1 = new Image();
+	/*var img1 = new Image();
 	img1.onload = function () {
 		println(1);
 		var canvas = document.getElementById("canvas");
@@ -14,10 +34,12 @@ PictureTool.prototype.onClicked = function() {
 	img1.src = 'img/Home.jpg';
 	//or
 	b = loadImage("laDefense.jpg");
-    image(b, 0, 0);
+    image(b, 0, 0);*/
 };
 PictureTool.prototype.setActive = function() {
-	
+	var _this = this;
+	this.pf = new ColorCanvas.ImagePopup(_this.onLoaded, _this);
+	this.pf.open({left: 40, top:120});
 };
 PictureTool.prototype.onPressed = function() {
 	Tool.prototype.onPressed.call(this);

@@ -84,12 +84,10 @@ Contour.prototype.drawContour = function() {
 	}
     beginShape();
 	vertex(this.points[0].x, this.points[0].y);
-    for (var i = 0; i < this.points.length; i++) {
-        if (i + 1 !== this.points.length) {
-            bezierVertex(this.points[i].anchorPoint1.x, this.points[i].anchorPoint1.y, 
-                this.points[i+1].anchorPoint2.x, this.points[i+1].anchorPoint2.y, 
-                this.points[i+1].x, this.points[i+1].y);
-        }
+    for (var i = 0; i < this.points.length-1; i++) {
+		bezierVertex(this.points[i].anchorPoint1.x, this.points[i].anchorPoint1.y, 
+			this.points[i+1].anchorPoint2.x, this.points[i+1].anchorPoint2.y, 
+			this.points[i+1].x, this.points[i+1].y);
     }
     if (this.closed) {
         var last = this.points.length - 1;
@@ -98,6 +96,32 @@ Contour.prototype.drawContour = function() {
             this.points[0].x, this.points[0].y);
     }
     endShape();
+	if (this.ts) {
+		var minX=Infinity, minY=Infinity, maxX=-Infinity, maxY=-Infinity;
+		for (var i = 0; i < this.ts.length; i++) {
+			if (this.ts[i].x < minX) {
+				minX = this.ts[i].x;
+			}
+			if (this.ts[i].y < minY) {
+				minY = this.ts[i].y;
+			}
+			if (this.ts[i].x > maxX) {
+				maxX = this.ts[i].x;
+			}
+			if (this.ts[i].y > maxY) {
+				maxY = this.ts[i].y;
+			}
+			/*stroke(this.ts[i].col);
+			fill(this.ts[i].col);
+			ellipse(this.ts[i].x, this.ts[i].y, 10, 10);
+			stroke(0,0,0);*/
+		}
+		noFill();
+		stroke(0,0,0);
+		strokeWeight(1);
+		rect(minX, minY, maxX-minX, maxY-minY);
+		fill(0,0,0);
+	}
 };
 Contour.prototype.drawContent = function() {
 	if (this.fillColor && this.fillEnabled) {
@@ -115,7 +139,58 @@ Contour.prototype.drawContent = function() {
 	strokeWeight(1);
 	stroke(0, 0, 0);
 };
-Contour.prototype.drawHandlers = function() {
+Contour.prototype.drawBoundingBox = function() {
+    noFill();
+	stroke(0, 0, 0);//TODO: change to a layer color
+	strokeWeight(1);
+	var minX, maxX, minY, maxY;
+	for (var i = 0; i < this.points.length-1; i++) {
+		this.ts = [];
+		var a = this.points[i];
+		var b = this.points[i].anchorPoint1;
+		var c = this.points[i+1].anchorPoint2;
+		var d  = this.points[i+1];
+		var a1 = {x:3*(b.x-a.x), y:3*(b.y-a.y)};
+		var b1 = {x:3*(c.x-b.x), y:3*(c.y-b.y)};
+		var c1 = {x:3*(d.x-c.x), y:3*(d.y-c.y)};
+		var v1 = {x:3*(-a.x+3*b.x-3*c.x+d.x), y:3*(-a.y+3*b.y-3*c.y+d.y)};
+		var v2 = {x:6*(a.x-2*b.x+c.x), y:6*(a.y-2*b.y+c.y)};
+		var v3 = {x:3*(b.x-a.x), y:3*(b.y-a.y)};
+		var ts = [];
+		var t1x = (-v2.x + Math.sqrt(v2.x*v2.x-4*v1.x*v3.x))/(2*v1.x);
+		var t2x = (-v2.x - Math.sqrt(v2.x*v2.x-4*v1.x*v3.x))/(2*v1.x);
+		var t1y = (-v2.y + Math.sqrt(v2.y*v2.y-4*v1.y*v3.y))/(2*v1.y);
+		var t2y = (-v2.y - Math.sqrt(v2.y*v2.y-4*v1.y*v3.y))/(2*v1.y);
+		if (t1x > 0 && t1x < 1) {
+			ts.push(t1x);
+		}
+		if (t2x > 0 && t2x < 1) {
+			ts.push(t2x);
+		}
+		if (t1y > 0 && t1y < 1) {
+			ts.push(t1y);
+		}
+		if (t2y > 0 && t2y < 1) {
+			ts.push(t2y);
+		}
+		ts.push(0);
+		ts.push(1);
+		var getBezier = function(t, p1, p2, p3, p4) {
+			var t2 = t * t;
+			var t3 = t2 * t;
+			var mt = 1-t;
+			var mt2 = mt * mt;
+			var mt3 = mt2 * mt;
+			return p1*mt3 + p2*3*mt2*t + p3*3*mt*t2 + p4*t3;
+		};
+		for (var k = 0; k < ts.length; k++) {
+			var xx = getBezier(ts[k],a.x,b.x,c.x,d.x);
+			var yy = getBezier(ts[k],a.y,b.y,c.y,d.y);
+			this.ts.push({x:xx, y:yy, col:color(255,0,0)});
+		}
+	}
+};
+Contour.prototype.drawHandlers = function(withPoints) {
     if (!this.points.length) {
         return null;
     }
@@ -123,6 +198,9 @@ Contour.prototype.drawHandlers = function() {
 	stroke(0, 0, 0);//TODO: change to a layer color
 	strokeWeight(1);
     this.drawContour();
+	if (!withPoints) {
+		return null;
+	}
     for (var i = 0; i < this.points.length; i++) {
         this.points[i].draw();
     }

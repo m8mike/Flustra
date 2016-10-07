@@ -72,7 +72,7 @@ LayerDrawingPart.prototype.drawTriangleOpen = function(x, y) {
 };
 LayerDrawingPart.prototype.drawColor = function(x, y, col) {
 	noStroke();
-	fill(col);
+	fill(col.r, col.g, col.b, col.a);
 	rect(x, y, 5, 19);
 };
 var drawCheckMark = function(x, y) {

@@ -30,8 +30,15 @@ LayersPanel.prototype.draw = function() {
 	translate(nav.camera.x, nav.camera.y);
 	scale(1/nav.camera.scaleRatio);
 	this.list.drawContent();
-	if (contourManager && contourManager.contour) {
-		contourManager.contour.drawHandlers();
+	if (contourManager) {
+		if (contourManager.selectedLayers) {
+			for (var i = 0; i < contourManager.selectedLayers.length; i++) {
+				contourManager.selectedLayers[i].content.drawHandlers();
+			}
+		}
+		if (contourManager.contour) {
+			contourManager.contour.drawHandlers(true);
+		}
 	}
 	popMatrix();
 	ResizablePanel.prototype.draw.call(this);//call superclass method
