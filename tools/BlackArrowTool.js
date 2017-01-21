@@ -3,11 +3,13 @@ var BlackArrowTool = function(x, y) {
     this.start = {x:0, y:0};
     this.finish = {x:0, y:0};
     this.selectionStarted = false;
+    this.movingStarted = false;
 	this.toolName = "Black arrow (to edit contours)";
 	this.selectedLayers = [];
 };
 BlackArrowTool.prototype = Object.create(Tool.prototype);
 BlackArrowTool.prototype.onClicked = function() {
+	/*
 	var layers = lp.list.getVisibleLayers();
 	var startEqualsFinish = this.start.x == this.finish.x && this.start.y == this.finish.y;
 	if (!startEqualsFinish) {
@@ -42,7 +44,7 @@ BlackArrowTool.prototype.onClicked = function() {
 			layer.content.visible = true;
 		}
 	}
-	contourManager.selectedLayers = this.selectedLayers;
+	contourManager.selectedLayers = this.selectedLayers;*/
 };
 BlackArrowTool.prototype.checkSelection = function() {
 	var layers = lp.list.getVisibleLayers();
@@ -81,18 +83,86 @@ BlackArrowTool.prototype.normalize = function() {
         this.finish.y = finishY;
     }
 };
-BlackArrowTool.prototype.onPressed = function() {
-	Tool.prototype.onPressed.call(this);
-    if (!this.selectionStarted) {
+BlackArrowTool.prototype.isLayerInside = function(layer) {
+	return layer.content.isPointInContour(getMouseX(), getMouseY());
+};
+BlackArrowTool.prototype.isLayerIntersectsSelectionRectangle = function(layer) {
+	return layer.content.isRectangleIntersectsContour();
+};
+BlackArrowTool.prototype.isLayerSelected = function(layer) {
+	if (this.selectedLayers.indexOf(layer) === -1) {
+		return false;
+	}
+	return true;
+};
+BlackArrowTool.prototype.getLayerUnderMouse = function() {
+	var layers = lp.list.getVisibleLayers();
+	for (var i = layers.length - 1; i >= 0; i--) {
+		var layer = layers[i];
+		if (layer.locked || !layer.contentVisible || !layer.content) {
+			continue;
+		}
+		if (layer.content.isPointInContour(getMouseX(), getMouseY())) {
+			return layer;
+		}
+	}
+	return null;
+};
+BlackArrowTool.prototype.startDrawingSelectionRectangle = function() {
+	if (!this.selectionStarted) {
 		this.start.x = getMouseX();
 		this.start.y = getMouseY();
 		this.finish = {x:this.start.x, y:this.start.y};
 		this.selectionStarted = true;
     }
 };
+BlackArrowTool.prototype.deselectAll = function() {
+	for (var i = 0; i < layers.length; i++) {
+		var layer = layers[i];
+		if (layer.content) {
+			layer.deactivate();
+		}
+	}
+	this.selectedLayers = [];
+};
+BlackArrowTool.prototype.resetSettings = function() {
+	this.movingStarted = false;
+	this.selectionStarted = false;
+	this.start.x = 0;
+	this.start.y = 0;
+	this.finish.x = 0;
+	this.finish.y = 0;
+};
+BlackArrowTool.prototype.handleClick = function() {
+	
+};
+var copySelectedContours = function() {
+	/*var allLayers = lp.list.getVisibleLayers();
+	var layers = contourManager.selectedLayers;
+	for (var i = 0; i < layers.length; i++) {
+		
+	}*/
+};
+BlackArrowTool.prototype.onPressed = function() {
+	Tool.prototype.onPressed.call(this);
+	var layer = this.getLayerUnderMouse();
+	var selected = this.isLayerSelected(this);
+	if (layer && selected) {
+		if (keyPressed && (keyCode === ALT)) {
+			copySelectedContours();
+		}
+		this.movingStarted = true;
+		//start = mouseX mouseY
+	} else if (keyPressed && (keyCode === SHIFT || keyCode === CONTROL)) {
+		this.startDrawingSelectionRectangle();
+	} else {
+		this.deselectAll();
+		this.startDrawingSelectionRectangle();
+	}
+};
 BlackArrowTool.prototype.onReleased = function() {
 	Tool.prototype.onReleased.call(this);
-    if (this.selectionStarted) {
+    /*if (this.selectionStarted) {
 		this.normalize();
 		this.checkSelection();
 		this.selectionStarted = false;
@@ -101,6 +171,49 @@ BlackArrowTool.prototype.onReleased = function() {
 		this.finish.x = 0;
 		this.finish.y = 0;
 		return null;
+	}*/
+	if (!this.movingStarted && !this.selectionStarted) {
+		resetSettings();
+		return null;
+	}
+	var layers = lp.list.getVisibleLayers();
+	this.finish.x = getMouseX();
+	this.finish.y = getMouseY();
+	if (this.movingStarted) {
+		this.movingStarted = false;
+		//move every selected layer
+	} else if (this.selectionStarted) {
+		var startEqualsFinish = this.start.x == this.finish.x && this.start.y == this.finish.y;
+		if (startEqualsFinish) {
+			this.handleClick();
+			this.resetSettings();
+			return null;
+		}
+		if (this.finish.x < this.start.x) {//from right to left
+			//if contours intersect rectangle ? select : deselect
+			for (var i = 0; i < layers.length; i++) {
+				var layer = layers[i];
+				if (layer.locked || !layer.contentVisible || !layer.content) {
+					continue;
+				}
+				if (this.isLayerIntersectsSelectionRectangle(layer)) {
+					if (keyPressed && (keyCode === CONTROL)) {
+						//deselect();
+					} else {
+						//select();
+					}
+				}
+			}
+		}
+		//for each contour
+		for (var i = 0; i < layers.length; i++) {
+			var layer = layers[i];
+			if (this.isLayerInside(layer)) {//contours inside selection
+				//select
+			} else if (!(keyPressed && (keyCode === SHIFT)) || !keyPressed) {
+				//deselect
+			}
+		}
 	}
 };
 BlackArrowTool.prototype.update = function() {

@@ -56,6 +56,76 @@ Contour.prototype.draw = function() {
 		this.drawHandlers();
 	}*/
 };
+Contour.prototype.isRectangleIntersectsContour = function(rect) {
+	if (!this.points.length) {
+		return false;
+	}
+	var cuberoot = function (x) {
+		return Math.pow(x, 1/3);
+	};
+	var getCubicRoots = function(pa, pb, pc, pd) {
+		var d = (-pa + 3*pb - 3*pc + pd),
+			a = (3*pa - 6*pb + 3*pc) / d,
+			b = (-3*pa + 3*pb) / d,
+			c = pa / d;
+		var p = (3*b - a*a)/3,
+			p3 = p/3,
+			q = (2*a*a*a - 9*a*b + 27*c)/27,
+			q2 = q/2,
+			discriminant = q2*q2 + p3*p3*p3;
+		// and some variables we're going to use later on:
+		var u1,v1,root1,root2,root3;
+		// three possible real roots:
+		if (discriminant < 0) {
+			var mp3  = -p/3,
+				mp33 = mp3*mp3*mp3,
+				r    = Math.sqrt( mp33 ),
+				t    = -q / (2*r),
+				cosphi = t < -1 ? -1 : t > 1 ? 1 : t,
+				phi  = Math.acos(cosphi);
+			var crtr = cuberoot(r),
+				t1   = 2 * crtr;
+			root1 = t1 * Math.cos(phi / 3) - a / 3;
+			root2 = t1 * Math.cos((phi + 2 * PI) / 3) - a / 3;
+			root3 = t1 * Math.cos((phi + 4 * PI) / 3) - a / 3;
+			return [root1, root2, root3].filter(accept);
+		}
+		// three real roots, but two of them are equal:
+		else if (discriminant === 0) {
+			u1 = q2 < 0 ? cuberoot(-q2) : -cuberoot(q2);
+			root1 = 2*u1 - a/3;
+			root2 = -u1 - a/3;
+			return [root1, root2].filter(accept);
+		}
+		// one real root, two complex roots
+		else {
+			var sd = Math.sqrt(discriminant);
+			u1 = cuberoot(sd - q2);
+			v1 = cuberoot(sd + q2);
+			root1 = u1 - v1 - a/3;
+			return [root1].filter(accept);
+		}
+	};
+	//TODO: add offsets (2 points of rectangle) to each p, check intersection
+	var checkPart = function(i, offset) {
+		var p1 = {x:this.points[i].x-offset.x, y:this.points[i].y-offset.y};
+		var p2 = {x:this.points[i].anchorPoint1.x - offset.x, y:this.points[i].anchorPoint1.y - offset.y};
+		var p3 = {x:this.points[i+1].anchorPoint2.x - offset.x, y:this.points[i+1].anchorPoint2.y - offset.y};
+		var p4  = {x:this.points[i+1].x - offset.x, y:this.points[i+1].y - offset.y};
+		if (getCubicRoots(p1.x, p2.x, p3.x, p4.x).length > 0) {
+			return true;
+		}
+		if (getCubicRoots(p1.y, p2.y, p3.y, p4.y).length > 0) {
+			return true;
+		}
+		return false;
+	};
+    for (var i = 0; i < this.points.length - 1; i++) {
+		checkPart(i, {x:rect.x, y:rect.y});
+		checkPart(i, {x:rect.x+rect.w, y:rect.y+rect.h});
+	}
+	
+};
 Contour.prototype.isPointInContour = function(x, y) {
 	if (!this.points.length) {
 		return false;
@@ -96,32 +166,6 @@ Contour.prototype.drawContour = function() {
             this.points[0].x, this.points[0].y);
     }
     endShape();
-	if (this.ts) {
-		var minX=Infinity, minY=Infinity, maxX=-Infinity, maxY=-Infinity;
-		for (var i = 0; i < this.ts.length; i++) {
-			if (this.ts[i].x < minX) {
-				minX = this.ts[i].x;
-			}
-			if (this.ts[i].y < minY) {
-				minY = this.ts[i].y;
-			}
-			if (this.ts[i].x > maxX) {
-				maxX = this.ts[i].x;
-			}
-			if (this.ts[i].y > maxY) {
-				maxY = this.ts[i].y;
-			}
-			/*stroke(this.ts[i].col);
-			fill(this.ts[i].col);
-			ellipse(this.ts[i].x, this.ts[i].y, 10, 10);
-			stroke(0,0,0);*/
-		}
-		noFill();
-		stroke(0,0,0);
-		strokeWeight(1);
-		rect(minX, minY, maxX-minX, maxY-minY);
-		fill(0,0,0);
-	}
 };
 Contour.prototype.drawContent = function() {
 	if (this.fillColor && this.fillEnabled) {
@@ -139,10 +183,7 @@ Contour.prototype.drawContent = function() {
 	strokeWeight(1);
 	stroke(0, 0, 0);
 };
-Contour.prototype.drawBoundingBox = function() {
-    noFill();
-	stroke(0, 0, 0);//TODO: change to a layer color
-	strokeWeight(1);
+Contour.prototype.calculateBounds = function() {
 	var minX, maxX, minY, maxY;
 	for (var i = 0; i < this.points.length-1; i++) {
 		this.ts = [];
@@ -189,6 +230,35 @@ Contour.prototype.drawBoundingBox = function() {
 			this.ts.push({x:xx, y:yy, col:color(255,0,0)});
 		}
 	}
+	var minX=Infinity, minY=Infinity, maxX=-Infinity, maxY=-Infinity;
+	for (var i = 0; i < this.ts.length; i++) {
+		if (this.ts[i].x < minX) {
+			minX = this.ts[i].x;
+		}
+		if (this.ts[i].y < minY) {
+			minY = this.ts[i].y;
+		}
+		if (this.ts[i].x > maxX) {
+			maxX = this.ts[i].x;
+		}
+		if (this.ts[i].y > maxY) {
+			maxY = this.ts[i].y;
+		}
+	}
+	var min = {x:minX, y:minY};
+	var max = {x:maxX, y:maxY};
+	this.bounds = {min:min, max:max};
+};
+Contour.prototype.drawBoundingBox = function() {
+    noFill();
+	stroke(0, 0, 0);//TODO: change to a layer color
+	strokeWeight(1);
+	this.calculateBounds();
+	var minX = this.bounds.min.x;
+	var maxX = this.bounds.max.x;
+	var minY = this.bounds.min.y;
+	var maxY = this.bounds.max.y;
+	rect(minX, minY, maxX-minX, maxY-minY);
 };
 Contour.prototype.drawHandlers = function(withPoints) {
     if (!this.points.length) {
