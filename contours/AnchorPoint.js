@@ -5,6 +5,7 @@ var AnchorPoint = function(x, y) {
 };
 AnchorPoint.prototype.draw = function() {
     if (this.visible) {
-        ellipse(this.x, this.y, 3, 3);
+		var size = 3 * nav.camera.scaleRatio;
+        ellipse(this.x, this.y, size, size);
     }
 };

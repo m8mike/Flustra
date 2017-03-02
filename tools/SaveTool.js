@@ -7,7 +7,16 @@ SaveTool.prototype.onClicked = function() {
 	
 };
 SaveTool.prototype.setActive = function() {
-	
+	//localStorage.setItem('layers', lp.list.layers);
+	//console.dir(lp.list.layers);
+	println("//save");
+	var layers = lp.list.getVisibleLayers();
+	for (var i = 0; i < layers.length; i++) {
+		var layer = layers[i];
+		if (layer.content) {
+			layer.content.logProcessing();
+		}
+	}
 };
 SaveTool.prototype.onPressed = function() {
 	Tool.prototype.onPressed.call(this);

@@ -5,8 +5,19 @@ var ColorSelect = function() {
 	this.strokeEnabled = true;
 	this.switchColors = new SwitchColors(100, window.innerHeight - 150);
 	this.defaultColors = new DefaultColors(0, window.innerHeight - 50);
+	this.strokeWidth = 5;
+	this.oldStrokeWidth = 5;
+	this.dragWidth = false;
+	this.dragStart = 0;
 };
 ColorSelect.prototype.draw = function() {
+	stroke(0, 0, 0);
+	fill(92, 92, 92);
+	rect(0, window.innerHeight - 180, 100, 30);
+	fill(255, 255, 255);
+	var widthStr = this.strokeWidth + " px";
+	text("stroke", 50 - textWidth("stroke") / 2, window.innerHeight - 167);
+	text(widthStr, 50 - textWidth(widthStr) / 2, window.innerHeight - 155);
 	if (this.strokeEnabled) {
 		stroke(0, 0, 0);
 		strokeWeight(1);
@@ -83,6 +94,22 @@ ColorSelect.prototype.setStrokeColor = function(r, g, b, a) {
 };
 ColorSelect.prototype.update = function() {
 	this.draw();
+	if (!mousePressed) {
+		this.dragWidth = false;
+	}
+	if (this.dragWidth) {
+		if (this.oldStrokeWidth + this.dragStart - mouseY >= 1) {
+			this.strokeWidth = this.oldStrokeWidth + this.dragStart - mouseY;
+		} else {
+			this.strokeWidth = 1;
+		}
+		var layers = lp.list.getVisibleLayers();
+		for (var i = 0; i < layers.length; i++) {
+			if (layers[i].contentSelected && layers[i].content) {
+				layers[i].content.strokeWidth = this.strokeWidth;
+			}
+		}
+	}
 };
 ColorSelect.prototype.onPressed = function() {
 	if (mouseX > 50 && mouseX < 150 && mouseY > window.innerHeight - 100 && mouseY < window.innerHeight) {
@@ -92,6 +119,11 @@ ColorSelect.prototype.onPressed = function() {
 	} else if (this.switchColors.onPressed()) {
 		return true;
 	} else if (this.defaultColors.onPressed()) {
+		return true;
+	} else if (mouseX > 0 && mouseX < 100 && mouseY > window.innerHeight - 180 && mouseY < window.innerHeight - 150) {
+		this.dragWidth = true;
+		this.dragStart = mouseY;
+		this.oldStrokeWidth = this.strokeWidth;
 		return true;
 	}
 	return false;
@@ -119,10 +151,16 @@ ColorSelect.prototype.checkMouse = function() {
 		return true;
 	} else if (this.defaultColors.checkMouse() || this.switchColors.checkMouse()) {
 		return true;
+	} else if (mouseX > 0 && mouseX < 100 && mouseY > window.innerHeight - 180 && mouseY < window.innerHeight - 150) {
+		return true;
 	}
 	return false;
 };
 ColorSelect.prototype.onReleased = function() {
+	if (this.dragWidth) {
+		this.dragWidth = false;
+		return true;
+	}
 	if (mouseX > 50 && mouseX < 70 && mouseY > window.innerHeight - 20 && mouseY < window.innerHeight) {
 		this.setFillEnabled(false);
 		return true;

@@ -8,8 +8,9 @@ RemovePointTool.prototype.onClicked = function() {
 		return null;
 	}
 	var contour = contourManager.contour;
+	var maxDist = 4 * nav.camera.scaleRatio;
     for (var i = 0; i < contour.points.length; i++) {
-        if (dist(contour.points[i].x, contour.points[i].y, getMouseX(), getMouseY()) < 4) {
+        if (dist(contour.points[i].x, contour.points[i].y, getMouseX(), getMouseY()) < maxDist) {
             contour.points.splice(i, 1);
             if (contour.points.length === 1) {
                 contour.closed = false;

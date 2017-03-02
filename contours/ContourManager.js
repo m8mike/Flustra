@@ -8,6 +8,7 @@ ContourManager.prototype.setActive = function(contour) {
 	}
 	this.contour = contour;
 	this.contour.active = true;
+	this.contour.showAnchors();
 	colorSelect.setFillColor(this.contour.fillColor.r, this.contour.fillColor.g, 
 							 this.contour.fillColor.b, this.contour.fillColor.a);
 	colorSelect.setStrokeColor(this.contour.strokeColor.r, this.contour.strokeColor.g, 
@@ -30,11 +31,12 @@ ContourManager.prototype.onPressed = function() {
 		this.addContour();
 	}
 	var contour = this.contour;
+	var maxDist = 4 * nav.camera.scaleRatio;
     if (contour.closed) {
         if (!contour.points.length) {
             return null;
         }
-        if (dist(contour.points[0].x, contour.points[0].y, getMouseX(), getMouseY()) < 4) {
+        if (dist(contour.points[0].x, contour.points[0].y, getMouseX(), getMouseY()) < maxDist) {
             contour.points.splice(0, 1);
             if (contour.points.length <= 1) {
                 contour.closed = false;
@@ -44,18 +46,18 @@ ContourManager.prototype.onPressed = function() {
 		this.addContour();
 		contour = this.contour;
     } else if (contour.points.length === 1) {
-        if (dist(contour.points[0].x, contour.points[0].y, getMouseX(), getMouseY()) < 4) {
+        if (dist(contour.points[0].x, contour.points[0].y, getMouseX(), getMouseY()) < maxDist) {
             contour.points.splice(0, 1);
             return null;
         }
     } else if (contour.points.length > 1) {
-        if (dist(contour.points[0].x, contour.points[0].y, getMouseX(), getMouseY()) < 4) {
+        if (dist(contour.points[0].x, contour.points[0].y, getMouseX(), getMouseY()) < maxDist) {
             contour.closed = true;
             return null;
         }
     }
     for (var i = 1; i < contour.points.length; i++) {
-        if (dist(contour.points[i].x, contour.points[i].y, getMouseX(), getMouseY()) < 4) {
+        if (dist(contour.points[i].x, contour.points[i].y, getMouseX(), getMouseY()) < maxDist) {
             contour.points.splice(i, 1);
             if (contour.points.length === 1) {
                 contour.closed = false;

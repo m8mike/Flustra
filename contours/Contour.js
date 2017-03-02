@@ -5,7 +5,7 @@ var Contour = function() {
 	this.strokeColor = colorSelect.strokeColor;
 	this.fillEnabled = colorSelect.fillEnabled;
 	this.strokeEnabled = colorSelect.strokeEnabled;
-	this.strokeWidth = 5;
+	this.strokeWidth = colorSelect.strokeWidth;
 	this.active = true;
 	this.visible = true;
 };
@@ -60,7 +60,10 @@ Contour.prototype.isRectangleIntersectsContour = function(rect) {
 	if (!this.points.length) {
 		return false;
 	}
-	var cuberoot = function (x) {
+	var accept = function(t) {
+		return 0<=t && t <=1;
+	}
+	var cuberoot = function(x) {
 		return Math.pow(x, 1/3);
 	};
 	var getCubicRoots = function(pa, pb, pc, pd) {
@@ -107,23 +110,63 @@ Contour.prototype.isRectangleIntersectsContour = function(rect) {
 		}
 	};
 	//TODO: add offsets (2 points of rectangle) to each p, check intersection
-	var checkPart = function(i, offset) {
-		var p1 = {x:this.points[i].x-offset.x, y:this.points[i].y-offset.y};
-		var p2 = {x:this.points[i].anchorPoint1.x - offset.x, y:this.points[i].anchorPoint1.y - offset.y};
-		var p3 = {x:this.points[i+1].anchorPoint2.x - offset.x, y:this.points[i+1].anchorPoint2.y - offset.y};
-		var p4  = {x:this.points[i+1].x - offset.x, y:this.points[i+1].y - offset.y};
-		if (getCubicRoots(p1.x, p2.x, p3.x, p4.x).length > 0) {
-			return true;
+	var checkPart = function(i, points, rect, offset) {
+		var p1, p2, p3, p4;
+		if (i == -1) {
+			var l = points.length - 1;
+			p1 = {x:points[l].x-offset.x, y:points[l].y-offset.y};
+			p2 = {x:points[l].anchorPoint1.x - offset.x, y:points[l].anchorPoint1.y - offset.y};
+			p3 = {x:points[0].anchorPoint2.x - offset.x, y:points[0].anchorPoint2.y - offset.y};
+			p4  = {x:points[0].x - offset.x, y:points[0].y - offset.y};
+		} else {
+			p1 = {x:points[i].x-offset.x, y:points[i].y-offset.y};
+			p2 = {x:points[i].anchorPoint1.x - offset.x, y:points[i].anchorPoint1.y - offset.y};
+			p3 = {x:points[i+1].anchorPoint2.x - offset.x, y:points[i+1].anchorPoint2.y - offset.y};
+			p4  = {x:points[i+1].x - offset.x, y:points[i+1].y - offset.y};
 		}
-		if (getCubicRoots(p1.y, p2.y, p3.y, p4.y).length > 0) {
-			return true;
+		var rootsX = getCubicRoots(p1.x, p2.x, p3.x, p4.x);
+		var rootsY = getCubicRoots(p1.y, p2.y, p3.y, p4.y);
+		p1.x += offset.x;
+		p2.x += offset.x;
+		p3.x += offset.x;
+		p4.x += offset.x;
+		p1.y += offset.y;
+		p2.y += offset.y;
+		p3.y += offset.y;
+		p4.y += offset.y;
+		for (var i = 0; i < rootsX.length; i++) {
+			var bp1x = bezierPoint(p1.x, p2.x, p3.x, p4.x, rootsX[i]);
+			var bp1y = bezierPoint(p1.y, p2.y, p3.y, p4.y, rootsX[i]);
+			if (bp1x >= rect.x && bp1x <= rect.x + rect.w &&
+				bp1y >= rect.y && bp1y <= rect.y + rect.h) {
+				return true;
+			}
+		}
+		for (var i = 0; i < rootsY.length; i++) {
+			var bp1x = bezierPoint(p1.x, p2.x, p3.x, p4.x, rootsY[i]);
+			var bp1y = bezierPoint(p1.y, p2.y, p3.y, p4.y, rootsY[i]);
+			if (bp1x >= rect.x && bp1x <= rect.x + rect.w &&
+				bp1y >= rect.y && bp1y <= rect.y + rect.h) {
+				return true;
+			}
 		}
 		return false;
 	};
     for (var i = 0; i < this.points.length - 1; i++) {
-		checkPart(i, {x:rect.x, y:rect.y});
-		checkPart(i, {x:rect.x+rect.w, y:rect.y+rect.h});
+		var check1 = checkPart(i, this.points, rect, {x:rect.x, y:rect.y});
+		var check2 = checkPart(i, this.points, rect, {x:rect.x+rect.w, y:rect.y+rect.h});
+		if (check1 || check2) {
+			return true;
+		}
 	}
+	if (this.closed) {
+		var check1 = checkPart(-1, this.points, rect, {x:rect.x, y:rect.y});
+		var check2 = checkPart(-1, this.points, rect, {x:rect.x+rect.w, y:rect.y+rect.h});
+		if (check1 || check2) {
+			return true;
+		}
+	}
+	return false;
 	
 };
 Contour.prototype.isPointInContour = function(x, y) {
@@ -148,22 +191,66 @@ Contour.prototype.isPointInContour = function(x, y) {
 	ctx.closePath();
 	return ctx.isPointInPath(x, y);
 };
+Contour.prototype.logProcessing = function() {
+	if (!this.points.length) {
+		return null;
+	}
+	var points = this.points;
+	if (this.fillColor && this.fillEnabled) {
+		println("fill(color(" + this.fillColor.r + ", " + 
+								this.fillColor.g + ", " + 
+								this.fillColor.b + ", " +
+								this.fillColor.a + "));");
+	} else {
+		println("noFill();");
+	}
+	if (this.strokeColor && this.strokeEnabled) {
+		println("stroke(color(" + this.strokeColor.r + ", " +
+								  this.strokeColor.g + ", " +
+								  this.strokeColor.b + ", " +
+								  this.strokeColor.a + "));");
+		println("strokeWeight(" + this.strokeWidth + ");");
+	} else {
+		println("noStroke();");
+	}
+	println("beginShape();");
+	println("vertex(" + points[0].x.toFixed(2) + ", " + points[0].y.toFixed(2) + ");");
+	for (var i = 0; i < points.length-1; i++) {
+		println("bezierVertex(" + points[i].anchorPoint1.x.toFixed(2) + ", " + 
+								  points[i].anchorPoint1.y.toFixed(2) + ", " + 
+								  points[i+1].anchorPoint2.x.toFixed(2) + ", " + 
+								  points[i+1].anchorPoint2.y.toFixed(2) + ", " + 
+								  points[i+1].x.toFixed(2) + ", " + 
+								  points[i+1].y.toFixed(2) + ");");
+    }
+    if (this.closed) {
+        var last = points.length - 1;
+		println("bezierVertex(" + points[last].anchorPoint1.x.toFixed(2) + ", " + 
+								  points[last].anchorPoint1.y.toFixed(2) + ", " + 
+								  points[0].anchorPoint2.x.toFixed(2) + ", " + 
+								  points[0].anchorPoint2.y.toFixed(2) + ", " + 
+								  points[0].x.toFixed(2) + ", " + 
+								  points[0].y.toFixed(2) + ");");
+    }
+   println("endShape();");
+};
 Contour.prototype.drawContour = function() {
 	if (!this.points.length) {
 		return null;
 	}
+	var points = this.points;
     beginShape();
-	vertex(this.points[0].x, this.points[0].y);
-    for (var i = 0; i < this.points.length-1; i++) {
-		bezierVertex(this.points[i].anchorPoint1.x, this.points[i].anchorPoint1.y, 
-			this.points[i+1].anchorPoint2.x, this.points[i+1].anchorPoint2.y, 
-			this.points[i+1].x, this.points[i+1].y);
+	vertex(points[0].x, points[0].y);
+    for (var i = 0; i < points.length-1; i++) {
+		bezierVertex(points[i].anchorPoint1.x, points[i].anchorPoint1.y, 
+			points[i+1].anchorPoint2.x, points[i+1].anchorPoint2.y, 
+			points[i+1].x, points[i+1].y);
     }
     if (this.closed) {
-        var last = this.points.length - 1;
-        bezierVertex(this.points[last].anchorPoint1.x, this.points[last].anchorPoint1.y, 
-            this.points[0].anchorPoint2.x, this.points[0].anchorPoint2.y, 
-            this.points[0].x, this.points[0].y);
+        var last = points.length - 1;
+        bezierVertex(points[last].anchorPoint1.x, points[last].anchorPoint1.y, 
+            points[0].anchorPoint2.x, points[0].anchorPoint2.y, 
+            points[0].x, points[0].y);
     }
     endShape();
 };
@@ -185,6 +272,9 @@ Contour.prototype.drawContent = function() {
 };
 Contour.prototype.calculateBounds = function() {
 	var minX, maxX, minY, maxY;
+	if (this.points.length <= 1) {
+		return null;
+	}
 	for (var i = 0; i < this.points.length-1; i++) {
 		this.ts = [];
 		var a = this.points[i];
@@ -260,20 +350,19 @@ Contour.prototype.drawBoundingBox = function() {
 	var maxY = this.bounds.max.y;
 	rect(minX, minY, maxX-minX, maxY-minY);
 };
-Contour.prototype.drawHandlers = function(withPoints) {
+Contour.prototype.drawPointsHandlers = function() {
+    for (var i = 0; i < this.points.length; i++) {
+        this.points[i].draw();
+    }
+};
+Contour.prototype.drawHandlers = function() {
     if (!this.points.length) {
         return null;
     }
     noFill();
 	stroke(0, 0, 0);//TODO: change to a layer color
-	strokeWeight(1);
+	strokeWeight(nav.camera.scaleRatio);
     this.drawContour();
-	if (!withPoints) {
-		return null;
-	}
-    for (var i = 0; i < this.points.length; i++) {
-        this.points[i].draw();
-    }
 };
 //Generates a LookUp Table of coordinates on the curve
 Contour.prototype.getLUT = function() {
@@ -331,4 +420,28 @@ Contour.prototype.updateAnchors = function(x, y) {
 		return null;
 	}
     this.points[this.points.length - 1].updateAnchors(x, y);
+};
+Contour.prototype.showAnchors = function() {
+	for (var i = 0; i < this.points.length; i++) {
+		this.points[i].anchorPoint1.visible = true;
+		this.points[i].anchorPoint2.visible = true;
+	}
+};
+Contour.prototype.move = function(offset) {
+	var points = this.points;
+	for (var i = 0; i < points.length; i++) {
+		points[i].move(offset);
+	}
+};
+Contour.prototype.rotate = function(center, angle) {
+	var points = this.points;
+	for (var i = 0; i < points.length; i++) {
+		points[i].rotate(center, angle);
+	}
+};
+Contour.prototype.scale = function(center, ratio) {
+	var points = this.points;
+	for (var i = 0; i < points.length; i++) {
+		points[i].scale(center, ratio);
+	}
 };

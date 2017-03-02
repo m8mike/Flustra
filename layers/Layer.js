@@ -4,6 +4,7 @@ var Layer = function(name, parent) {
 	
 	this.drawingPart = new LayerDrawingPart(this);
 	
+	this.contentSelected = true;
 	this.contentVisible = true;
 	
 	this.layerSelected = false;
@@ -33,6 +34,9 @@ Layer.prototype.isChildOf = function(parent) {
 	}
 	return this.parent.isChildOf(parent);
 };
+Layer.prototype.select = function() {
+	this.contentSelected = true;
+};
 Layer.prototype.removeParent = function() {
 	if (this.parent) {
 		this.parent.children.splice(this.parent.children.indexOf(this), 1);
@@ -52,6 +56,12 @@ Layer.prototype.setParent = function(parent, index) {
 		this.parent.children.splice(index, 0, this);
 	} else {
 		this.parent.children.push(this);
+	}
+};
+Layer.prototype.cloneWithoutChildren = function(parent) {
+	var layer = new Layer(this.name + " - copy", parent);
+	if (this.content) {
+		layer.content = this.content.clone();
 	}
 };
 Layer.prototype.clone = function(parent) {
@@ -74,6 +84,7 @@ Layer.prototype.deactivate = function() {
 			contourManager.contour = undefined;
 		}
 	}
+	this.contentSelected = false;
 };
 Layer.prototype.parentsVisible = function() {
 	if (this.parent) {

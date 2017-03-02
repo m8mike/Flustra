@@ -3,6 +3,8 @@ var tools;
 var contourManager;
 var colorSelect;
 var nav;
+
+var ctrlKey = false;
 void setup() {
 	size(window.innerWidth, window.innerHeight);
 	//background(255, 255, 255);
@@ -69,7 +71,6 @@ void mouseReleased() {
 		//var canvas = document.getElementById("canvas");
 		//canvas.style.cursor = "auto";
 	}
-	tools.activeTool.onReleased();
 	lp.onReleased();
 	if (tools.onReleased()) {
 		return null;
@@ -77,6 +78,10 @@ void mouseReleased() {
 	if (colorSelect.onReleased()) {
 		return null;
 	}
+	if (lp.checkMouse()) {
+		return null;
+	}
+	tools.activeTool.onReleased();
 }
 void mouseClicked() {
 	if (!tools.checkMouse() && !lp.checkMouse() && !colorSelect.checkMouse()) {
@@ -87,6 +92,17 @@ void mouseOut() {
 	lp.movingStarted = false;
 	lp.sideMoving = '';
 }
+function KeyPress(e) {
+	var evtobj = window.event? event : e;
+	if (evtobj.keyCode == 65 && evtobj.ctrlKey) {
+		lp.selectEverything();
+	} else if (evtobj.keyCode == 90 && evtobj.ctrlKey) {
+		alert("Ctrl+z");
+	} else if (evtobj.keyCode == 27) {
+		tools.activeTool.onEsc();
+	}
+}
+document.onkeydown = KeyPress;
 float getMouseX() {
 	return nav.camera.scaleRatio * (mouseX - nav.camera.x);
 }

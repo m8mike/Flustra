@@ -7,7 +7,10 @@ LoadTool.prototype.onClicked = function() {
 	
 };
 LoadTool.prototype.setActive = function() {
-	
+	var layers = localStorage.getItem('layers');
+	if (layers) {
+		lp.list.layers = layers;
+	}
 };
 LoadTool.prototype.onPressed = function() {
 	Tool.prototype.onPressed.call(this);

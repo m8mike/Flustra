@@ -1,6 +1,9 @@
 var MoveTool = function(x, y) {
 	Tool.call(this, x, y);
 	this.toolName = "Move";
+    this.start = {x:0, y:0};
+    this.finish = {x:0, y:0};
+	this.movingStarted = false;
 };
 MoveTool.prototype = Object.create(Tool.prototype);
 MoveTool.prototype.onClicked = function() {
@@ -8,12 +11,56 @@ MoveTool.prototype.onClicked = function() {
 };
 MoveTool.prototype.onPressed = function() {
 	Tool.prototype.onPressed.call(this);
+	
 };
 MoveTool.prototype.onReleased = function() {
 	Tool.prototype.onReleased.call(this);
+	var layers = lp.list.getVisibleLayers();
+	this.finish.x = getMouseX();
+	this.finish.y = getMouseY();
+	if (this.movingStarted) {
+		this.movingStarted = false;
+		var offset = {x:getMouseX() - this.start.x, 
+					  y:getMouseY() - this.start.y};
+		//move every selected layer
+		for (var i = 0; i < layers.length; i++) {
+			var layer = layers[i];
+			if (!layer.content || !layer.contentSelected) {
+				continue;
+			}
+			layer.content.move(offset);
+		}
+	} else {
+		this.movingStarted = true;
+		this.start.x = getMouseX();
+		this.start.y = getMouseY();
+		this.finish = {x:this.start.x, y:this.start.y};
+	}
+};
+MoveTool.prototype.onEsc = function() {
+    this.start = {x:0, y:0};
+    this.finish = {x:0, y:0};
+	this.movingStarted = false;
 };
 MoveTool.prototype.update = function() {
 	Tool.prototype.update.call(this);
+	if (this.movingStarted) {
+		pushMatrix();
+		scale(1/nav.camera.scaleRatio);
+		translate(getMouseX() - this.start.x + nav.camera.x * nav.camera.scaleRatio, 
+				  getMouseY() - this.start.y + nav.camera.y * nav.camera.scaleRatio);
+		strokeWeight(1);
+		stroke(0, 0, 0);
+		var visibleLayers = lp.list.getVisibleLayers();
+		for (var i = 0; i < visibleLayers.length; i++) {
+			var layer = visibleLayers[i];
+			if (!layer.content || !layer.contentSelected) {
+				continue;
+			}
+			layer.content.drawHandlers();
+		}
+		popMatrix();
+	}
 };
 MoveTool.prototype.draw = function() {
 	Tool.prototype.draw.call(this);

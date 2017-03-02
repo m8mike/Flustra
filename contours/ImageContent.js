@@ -27,3 +27,10 @@ ImageContent.prototype.draw = function() {
 		return null;
 	}
 };
+
+ImageContent.prototype.logProcessing = function() {
+	
+};
+ImageContent.prototype.isPointInContour = function(x, y) {
+	return false;
+};

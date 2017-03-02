@@ -12,18 +12,19 @@ AngleTool.prototype.onPressed = function() {
 	if (!contour) {
 		return null;
 	}
+	var maxDist = 4 * nav.camera.scaleRatio;
     for (var i = 0; i < contour.points.length; i++) {
-        if (dist(contour.points[i].x, contour.points[i].y, getMouseX(), getMouseY()) < 4) {
+        if (dist(contour.points[i].x, contour.points[i].y, getMouseX(), getMouseY()) < maxDist) {
 			this.activePoint = contour.points[i];
 			this.activePoint.anchorPoint1.visible = true;
 			this.activePoint.anchorPoint2.visible = true;
 			return null;
-		} else if (dist(contour.points[i].anchorPoint1.x, contour.points[i].anchorPoint1.y, getMouseX(), getMouseY()) < 4) {
+		} else if (dist(contour.points[i].anchorPoint1.x, contour.points[i].anchorPoint1.y, getMouseX(), getMouseY()) < maxDist) {
 			if (contour.points[i].anchorPoint1.visible) {
 				this.activeAnchor = contour.points[i].anchorPoint1;
 				return null;
 			}
-		} else if (dist(contour.points[i].anchorPoint2.x, contour.points[i].anchorPoint2.y, getMouseX(), getMouseY()) < 4) {
+		} else if (dist(contour.points[i].anchorPoint2.x, contour.points[i].anchorPoint2.y, getMouseX(), getMouseY()) < maxDist) {
 			if (contour.points[i].anchorPoint2.visible) {
 				this.activeAnchor = contour.points[i].anchorPoint2;
 				return null;

@@ -2,6 +2,8 @@ var HandTool = function(x, y) {
 	Tool.call(this, x, y);
 	this.toolName = "Hand tool";
 	this.start = {x:0, y:0};
+	this.offset = {x:0, y:0};
+	this.scaleBefore = 1;
 	this.movingStarted = false;
 	this.scalingStarted = false;
 };
@@ -12,12 +14,25 @@ HandTool.prototype.onClicked = function() {
 HandTool.prototype.onRightPressed = function() {
 	if (!this.scalingStarted) {
 		this.scalingStarted = true;
+		this.start.x = mouseX;
 		this.start.y = mouseY;
+		this.offset.x = nav.camera.x;
+		this.offset.y = nav.camera.y;
+		this.scaleBefore = nav.camera.scaleRatio;
 	}
 };
 HandTool.prototype.onPressed = function() {
 	//Tool.prototype.onPressed.call(this);
-	if (!this.movingStarted) {
+	if (!this.movingStarted && !this.scalingStarted) {
+		if (keyPressed && keyCode === CONTROL) {
+			this.scalingStarted = true;
+			this.start.x = mouseX;
+			this.start.y = mouseY;
+			this.offset.x = nav.camera.x;
+			this.offset.y = nav.camera.y;
+			this.scaleBefore = nav.camera.scaleRatio;
+			return null;
+		}
 		this.movingStarted = true;
 		this.start.x = getMouseX();
 		this.start.y = getMouseY();
@@ -25,7 +40,10 @@ HandTool.prototype.onPressed = function() {
 };
 HandTool.prototype.onRightReleased = function() {
 	if (this.scalingStarted) {
-		nav.camera.scaleRatio += (mouseY - this.start.y) / window.innerHeight;
+		nav.camera.scaleRatio = this.scaleBefore + (mouseY - this.start.y) / window.innerHeight;
+		nav.camera.x = this.offset.x + this.start.x/this.scaleBefore - this.start.x/nav.camera.scaleRatio;
+		nav.camera.y = this.offset.y + this.start.y/this.scaleBefore - this.start.y/nav.camera.scaleRatio;
+		this.start.x = 0;
 		this.start.y = 0;
 		this.scalingStarted = false;
 	}
@@ -39,12 +57,21 @@ HandTool.prototype.onReleased = function() {
 		this.start.x = 0;
 		this.start.y = 0;
 	}
+	if (this.scalingStarted) {
+		nav.camera.scaleRatio = this.scaleBefore + (mouseY - this.start.y) / window.innerHeight;
+		nav.camera.x = this.offset.x + this.start.x/this.scaleBefore - this.start.x/nav.camera.scaleRatio;
+		nav.camera.y = this.offset.y + this.start.y/this.scaleBefore - this.start.y/nav.camera.scaleRatio;
+		this.start.x = 0;
+		this.start.y = 0;
+		this.scalingStarted = false;
+	}
 };
 HandTool.prototype.update = function() {
 	//Tool.prototype.update.call(this);
 	if (this.scalingStarted) {
-		nav.camera.scaleRatio += (mouseY - this.start.y) / window.innerHeight;
-		this.start.y = mouseY;
+		nav.camera.scaleRatio = this.scaleBefore + (mouseY - this.start.y) / window.innerHeight;
+		nav.camera.x = this.offset.x + this.start.x/this.scaleBefore - this.start.x/nav.camera.scaleRatio;
+		nav.camera.y = this.offset.y + this.start.y/this.scaleBefore - this.start.y/nav.camera.scaleRatio;
 	} else if (this.movingStarted) {
 		nav.camera.x += (getMouseX() - this.start.x)/nav.camera.scaleRatio;
 		nav.camera.y += (getMouseY() - this.start.y)/nav.camera.scaleRatio;

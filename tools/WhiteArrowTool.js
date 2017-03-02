@@ -36,8 +36,9 @@ WhiteArrowTool.prototype.checkPointsToMove = function() {
 		return false;
 	}
 	var units = contourManager.contour.points;
+	var maxDist = 8 * nav.camera.scaleRatio;
     for (var i = 0; i < units.length; i++) {
-        if (dist(units[i].x, units[i].y, getMouseX(), getMouseY()) < 8) {
+        if (dist(units[i].x, units[i].y, getMouseX(), getMouseY()) < maxDist) {
 			this.movingPoint = units[i];
 			this.start.x = getMouseX();
 			this.start.y = getMouseY();
@@ -51,8 +52,10 @@ WhiteArrowTool.prototype.checkAnchorsToMove = function() {
 		return false;
 	}
 	var units = contourManager.contour.points;
+	var maxDist = 8 * nav.camera.scaleRatio;
     for (var i = 0; i < units.length; i++) {
-        if (dist(units[i].anchorPoint1.x, units[i].anchorPoint1.y, getMouseX(), getMouseY()) < 8 && units[i].anchorPoint1.visible) {
+		var distToAnchor1 = dist(units[i].anchorPoint1.x, units[i].anchorPoint1.y, getMouseX(), getMouseY());
+        if (distToAnchor1 < maxDist && units[i].anchorPoint1.visible) {
 			this.movingAnchor = units[i].anchorPoint1;
 			var fi1 = Math.atan2(this.movingAnchor.y - units[i].y, this.movingAnchor.x - units[i].x);
 			var fi2 = Math.atan2(units[i].anchorPoint2.y - units[i].y, units[i].anchorPoint2.x - units[i].x);
@@ -62,7 +65,8 @@ WhiteArrowTool.prototype.checkAnchorsToMove = function() {
 			}
 			return true;
 		}
-        if (dist(units[i].anchorPoint2.x, units[i].anchorPoint2.y, getMouseX(), getMouseY()) < 8 && units[i].anchorPoint2.visible) {
+		var distToAnchor2 = dist(units[i].anchorPoint2.x, units[i].anchorPoint2.y, getMouseX(), getMouseY());
+        if (distToAnchor2 < maxDist && units[i].anchorPoint2.visible) {
 			this.movingAnchor = units[i].anchorPoint2;
 			var fi1 = Math.atan2(this.movingAnchor.y - units[i].y, this.movingAnchor.x - units[i].x);
 			var fi2 = Math.atan2(units[i].anchorPoint1.y - units[i].y, units[i].anchorPoint1.x - units[i].x);
@@ -90,9 +94,10 @@ WhiteArrowTool.prototype.normalize = function() {
     }
 };
 WhiteArrowTool.prototype.checkLayersToActivate = function() {
-	for (var i = lp.list.layers.length - 1; i >= 0; i--) {
-		var layer = lp.list.layers[i];
-		if (layer.locked || !layer.contentVisible || !layer.content) {
+	var layers = lp.list.getVisibleLayers();
+	for (var i = layers.length - 1; i >= 0; i--) {
+		var layer = layers[i];
+		if (layer.locked || !layer.content) {
 			continue;
 		}
 		var contour = layer.content;
@@ -103,13 +108,17 @@ WhiteArrowTool.prototype.checkLayersToActivate = function() {
 	}
 };
 WhiteArrowTool.prototype.onClicked = function() {
+	
+};
+WhiteArrowTool.prototype.handleClick = function() {
 	if (!contourManager.contour) {
 		this.checkLayersToActivate();
 		return null;
 	}
 	var units = contourManager.contour.points;
+	var maxDist = 8 * nav.camera.scaleRatio;
     for (var i = 0; i < units.length; i++) {
-		if (dist(units[i].x, units[i].y, getMouseX(), getMouseY()) < 8) {
+		if (dist(units[i].x, units[i].y, getMouseX(), getMouseY()) < maxDist) {
 			if (keyPressed && keyCode === CONTROL) {
 				units[i].deselect();
 			} else {
@@ -161,6 +170,15 @@ WhiteArrowTool.prototype.onReleased = function() {
 		this.movingAnchor = null;
 	}
     if (this.selectionStarted) {
+		if (this.start.x == this.finish.x && this.start.y == this.finish.y) {
+			this.handleClick();
+			this.selectionStarted = false;
+			this.start.x = 0;
+			this.start.y = 0;
+			this.finish.x = 0;
+			this.finish.y = 0;
+			return null;
+		}
 		this.normalize();
 		this.checkSelection();
 		this.selectionStarted = false;
@@ -211,13 +229,16 @@ WhiteArrowTool.prototype.update = function() {
 		return null;
 	}
 	var units = contourManager.contour.points;
+	var maxDist = 8 * nav.camera.scaleRatio;
     for (var i = 0; i < units.length; i++) {
-		if (dist(units[i].x, units[i].y, getMouseX(), getMouseY()) < 8) {
+		if (dist(units[i].x, units[i].y, getMouseX(), getMouseY()) < maxDist) {
 			fill(255, 255, 255);
 			stroke(0, 0, 0);
 			strokeWeight(1);
-			rect(1 / nav.camera.scaleRatio * (units[i].x - 4) + nav.camera.x, 
-				 1 / nav.camera.scaleRatio * (units[i].y - 4) + nav.camera.y, 8, 8);
+			rectMode(CENTER);
+			rect(units[i].x / nav.camera.scaleRatio + nav.camera.x, 
+				 units[i].y / nav.camera.scaleRatio + nav.camera.y, 8, 8);
+			rectMode(CORNER);
 			return null;
 		}
 	}

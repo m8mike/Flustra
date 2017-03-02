@@ -31,13 +31,16 @@ LayersPanel.prototype.draw = function() {
 	scale(1/nav.camera.scaleRatio);
 	this.list.drawContent();
 	if (contourManager) {
-		if (contourManager.selectedLayers) {
-			for (var i = 0; i < contourManager.selectedLayers.length; i++) {
-				contourManager.selectedLayers[i].content.drawHandlers();
+		var layers = this.list.getVisibleLayers();
+		for (var i = 0; i < layers.length; i++) {
+			if (layers[i].contentSelected && layers[i].content) {
+				if (layers[i].content instanceof Contour) {
+					layers[i].content.drawHandlers();
+				}
 			}
 		}
 		if (contourManager.contour) {
-			contourManager.contour.drawHandlers(true);
+			contourManager.contour.drawPointsHandlers();
 		}
 	}
 	popMatrix();
@@ -81,6 +84,19 @@ LayersPanel.prototype.checkMouse = function() {
 		return true;
 	}
 	return false;
+};
+LayersPanel.prototype.selectEverything = function() {
+	var selectChildren = function(layers) {
+		for (var i = 0; i < layers.length; i++) {
+			var layer = layers[i];
+			if (layer.content && layer.contentVisible && !layer.locked) {
+				layer.select();
+			}
+			selectChildren(layer.children);
+		}
+	};
+	var layers = this.list.layers;
+	selectChildren(layers);
 };
 LayersPanel.prototype.onPressed = function() {
     this.newLayerButton.onPressed();

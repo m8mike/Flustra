@@ -55,3 +55,6 @@ Tool.prototype.onPressed = function() {
 Tool.prototype.onClicked = function() {
 	
 };
+Tool.prototype.onEsc = function() {
+	
+};
