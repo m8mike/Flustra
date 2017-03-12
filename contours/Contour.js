@@ -197,26 +197,26 @@ Contour.prototype.logProcessing = function() {
 	}
 	var points = this.points;
 	if (this.fillColor && this.fillEnabled) {
-		println("fill(color(" + this.fillColor.r + ", " + 
+		console.log("fill(color(" + this.fillColor.r + ", " + 
 								this.fillColor.g + ", " + 
 								this.fillColor.b + ", " +
 								this.fillColor.a + "));");
 	} else {
-		println("noFill();");
+		console.log("noFill();");
 	}
 	if (this.strokeColor && this.strokeEnabled) {
-		println("stroke(color(" + this.strokeColor.r + ", " +
+		console.log("stroke(color(" + this.strokeColor.r + ", " +
 								  this.strokeColor.g + ", " +
 								  this.strokeColor.b + ", " +
 								  this.strokeColor.a + "));");
-		println("strokeWeight(" + this.strokeWidth + ");");
+		console.log("strokeWeight(" + this.strokeWidth + ");");
 	} else {
-		println("noStroke();");
+		console.log("noStroke();");
 	}
-	println("beginShape();");
-	println("vertex(" + points[0].x.toFixed(2) + ", " + points[0].y.toFixed(2) + ");");
+	console.log("beginShape();");
+	console.log("vertex(" + points[0].x.toFixed(2) + ", " + points[0].y.toFixed(2) + ");");
 	for (var i = 0; i < points.length-1; i++) {
-		println("bezierVertex(" + points[i].anchorPoint1.x.toFixed(2) + ", " + 
+		console.log("bezierVertex(" + points[i].anchorPoint1.x.toFixed(2) + ", " + 
 								  points[i].anchorPoint1.y.toFixed(2) + ", " + 
 								  points[i+1].anchorPoint2.x.toFixed(2) + ", " + 
 								  points[i+1].anchorPoint2.y.toFixed(2) + ", " + 
@@ -225,14 +225,14 @@ Contour.prototype.logProcessing = function() {
     }
     if (this.closed) {
         var last = points.length - 1;
-		println("bezierVertex(" + points[last].anchorPoint1.x.toFixed(2) + ", " + 
+		console.log("bezierVertex(" + points[last].anchorPoint1.x.toFixed(2) + ", " + 
 								  points[last].anchorPoint1.y.toFixed(2) + ", " + 
 								  points[0].anchorPoint2.x.toFixed(2) + ", " + 
 								  points[0].anchorPoint2.y.toFixed(2) + ", " + 
 								  points[0].x.toFixed(2) + ", " + 
 								  points[0].y.toFixed(2) + ");");
     }
-   println("endShape();");
+   console.log("endShape();");
 };
 Contour.prototype.drawContour = function() {
 	if (!this.points.length) {

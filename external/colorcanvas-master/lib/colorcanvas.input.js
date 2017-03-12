@@ -580,6 +580,87 @@
   
   
   
+  var DisplayCodeLoadInput = (function(_super) {
+
+  var template = function(__obj) {
+    if (!__obj) __obj = {};
+    var __out = [], __capture = function(callback) {
+      var out = __out, result;
+      __out = [];
+      callback.call(this);
+      result = __out.join('');
+      __out = out;
+      return __safe(result);
+    }, __sanitize = function(value) {
+      if (value && value.ecoSafe) {
+        return value;
+      } else if (typeof value !== 'undefined' && value != null) {
+        return __escape(value);
+      } else {
+        return '';
+      }
+    }, __safe, __objSafe = __obj.safe, __escape = __obj.escape;
+    __safe = __obj.safe = function(value) {
+      if (value && value.ecoSafe) {
+        return value;
+      } else {
+        if (!(typeof value !== 'undefined' && value != null)) value = '';
+        var result = new String(value);
+        result.ecoSafe = true;
+        return result;
+      }
+    };
+    if (!__escape) {
+      __escape = __obj.escape = function(value) {
+        return ('' + value)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      };
+    }
+    (function() {
+      (function() {
+      
+        __out.push('<label>\n      Input code:\n   </label><textarea name="inputCode" rows="20" cols="40"></textarea> \n\n    <footer>\n      <button data-type="cancel">Cancel</button>\n      <button data-type="save" class="right">Save</button>\n    </footer>');
+      
+      }).call(this);
+      
+    }).call(__obj);
+    __obj.safe = __objSafe, __obj.escape = __escape;
+    return __out.join('');
+  };
+    __extends(DisplayCodeLoadInput, _super);
+
+    DisplayCodeLoadInput.name = 'DisplayCodeLoadInput';
+
+    DisplayCodeLoadInput.prototype.tag = 'article';
+
+    DisplayCodeLoadInput.prototype.elements = {
+      'textarea[name=inputCode]': '$inputCode'
+    };
+
+    DisplayCodeLoadInput.prototype.events = {
+    };
+
+    function DisplayCodeLoadInput() {
+      DisplayCodeLoadInput.__super__.constructor.apply(this, arguments);
+      this.color || (this.color = new Color);
+      this.render();
+    }
+
+    DisplayCodeLoadInput.prototype.render = function() {
+      this.html(template(this));
+      if (this.original) {
+        return this.$original.css({
+          background: this.original.toString()
+        });
+      }
+    };
+    return DisplayCodeLoadInput;
+
+  })(Spine.Controller);
+  
   var __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
   var Spine = ColorCanvas.Spine;
@@ -677,6 +758,44 @@
   })(Spine.Controller);
   
   
+  var CodePicker = (function(_super) {
+
+    __extends(CodePicker, _super);
+
+    CodePicker.name = 'CodePicker';
+
+    CodePicker.prototype.className = 'colorCanvas';
+
+    CodePicker.prototype.events = {
+      'click [data-type=cancel]': 'cancel'
+    };
+
+    function CodePicker() {
+      CodePicker.__super__.constructor.apply(this, arguments);
+      this.render();
+    }
+
+    CodePicker.prototype.render = function() {
+      var _this = this;
+      this.el.empty();
+      this.display = new DisplayCodeLoadInput();
+      return this.append(this.display);
+    };
+
+    CodePicker.prototype.cancel = function(e) {
+      e.preventDefault();
+      return null;
+    };
+
+    CodePicker.prototype.release = function() {
+      CodePicker.__super__.release.apply(this, arguments);
+      this.gradient.release();
+      return this.display.release();
+    };
+
+    return CodePicker;
+
+  })(Spine.Controller);
   
   
   
@@ -751,6 +870,66 @@
   //remove alpha
   
   
+  
+  
+  CodeLoadInputPopup = (function(_super) {
+    __extends(CodeLoadInputPopup, _super);
+
+    CodeLoadInputPopup.name = 'CodeLoadInputPopup';
+
+    CodeLoadInputPopup.prototype.events = {
+      'submit form': 'close',
+      'click [data-type=cancel]': 'close',
+      'click [data-type=save]': 'save'
+    };
+
+    function CodeLoadInputPopup(whatever, callback, target) {
+	  this.callback = callback;
+	  this.target = target;
+      this.keydown = __bind(this.keydown, this);
+
+      var _this = this;
+      CodeLoadInputPopup.__super__.constructor.apply(this, arguments);
+      this.color || (this.color = new Color);
+      this.picker = new CodePicker({
+        color: this.color
+      });
+      this.append(this.picker);
+    }
+
+    CodeLoadInputPopup.prototype.open = function() {
+      $(document).keydown(this.keydown);
+      return CodeLoadInputPopup.__super__.open.apply(this, arguments);
+    };
+
+    CodeLoadInputPopup.prototype.save = function() {
+	  var codeString = this.picker.display.$inputCode.val();
+	  this.callback.call(this.target, codeString);
+    };
+
+    CodeLoadInputPopup.prototype.close = function() {
+      $(document).unbind('keydown', this.keydown);
+      return CodeLoadInputPopup.__super__.close.apply(this, arguments);
+    };
+
+    CodeLoadInputPopup.prototype.cancel = function() {
+      this.trigger('change', this.picker.original);
+      return this.close();
+    };
+
+    CodeLoadInputPopup.prototype.keydown = function(e) {
+      switch (e.which) {
+        case 27:
+          return this.cancel();
+        case 13:
+          return this.save();
+      }
+    };
+
+    return CodeLoadInputPopup;
+
+  })(Popup);
+  
   ColorCanvas.Input = Input;
 
   ColorCanvas.Popup = Popup;
@@ -758,6 +937,7 @@
   ColorCanvas.PickerPopup = PickerPopup;
   ColorCanvas.ImagePopup = ImagePopup;
   ColorCanvas.LayerPopup = LayerPopup;
+  ColorCanvas.CodeLoadInputPopup = CodeLoadInputPopup;
 
 }).call(this);
 var changeTab = function(e, tabID) {

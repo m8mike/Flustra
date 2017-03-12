@@ -20,7 +20,14 @@ void setup() {
 		return false; 
 	}, false);*/
 }
-void draw() {
+void mouseDragged() {
+	drawAll();
+}
+void mouseMoved() {
+	drawAll();
+}
+void drawAll() {
+	console.log("here");
 	background(255, 255, 255);
 	lp.draw();
 	tools.draw();

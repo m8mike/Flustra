@@ -30,16 +30,18 @@ List.prototype.resize = function(x, y, w, h) {
     }
 };
 List.prototype.addImage = function(image) {
-	this.active.children.push(new Layer("Image " + this.active.name + " " + this.active.children.length, this.active));
-	this.active.childrenVisible = true;
-	var layer = this.active.children[this.active.children.length - 1];
+	var active = this.active;
+	active.children.push(new Layer("Image " + active.name + " " + active.children.length, active));
+	active.childrenVisible = true;
+	var layer = active.children[active.children.length - 1];
 	layer.content = image;
 	this.resize(this.x, this.y, this.w, this.h);
 };
 List.prototype.addContour = function(contour) {
-	this.active.children.push(new Layer(this.active.name + " " + this.active.children.length, this.active));
-	this.active.childrenVisible = true;
-	var layer = this.active.children[this.active.children.length - 1];
+	var active = this.active;
+	active.children.push(new Layer(active.name + " " + active.children.length, active));
+	active.childrenVisible = true;
+	var layer = active.children[active.children.length - 1];
 	layer.content = contour;
 	this.resize(this.x, this.y, this.w, this.h);
 };
@@ -66,7 +68,7 @@ List.prototype.addSublayer = function() {
 			layers[i].childrenVisible = true;
 			layers[i].children.push(new Layer(layers[i].name + " " + layers[i].children.length, layers[i]));
 			this.resize(this.x, this.y, this.w, this.h);
-			return null;
+			return layers[i].children[layers[i].children.length - 1];
 		}
 	}
 };

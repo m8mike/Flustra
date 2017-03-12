@@ -7,44 +7,7 @@ var BlackArrowTool = function(x, y) {
 	this.toolName = "Black arrow (to edit contours)";
 };
 BlackArrowTool.prototype = Object.create(Tool.prototype);
-BlackArrowTool.prototype.onClicked = function() {
-	/*
-	var layers = lp.list.getVisibleLayers();
-	var startEqualsFinish = this.start.x == this.finish.x && this.start.y == this.finish.y;
-	if (!startEqualsFinish) {
-		return null;
-	}
-	if ((keyPressed && !(keyCode === CONTROL || keyCode === SHIFT)) || !keyPressed) {
-		this.selectedLayers = [];
-	}
-	for (var i = layers.length - 1; i >= 0; i--) {
-		var layer = layers[i];
-		if (layer.locked || !layer.contentVisible || !layer.content) {
-			continue;
-		}
-		if (layer.content.isPointInContour(getMouseX(), getMouseY()) && (this.selectedLayers.indexOf(layer) === -1)) {
-			if (keyPressed && keyCode === CONTROL) {
-				this.selectedLayers.splice(this.selectedLayers.indexOf(layer), 1);
-			} else {
-				this.selectedLayers.push(layer);
-			}
-			break;
-		}
-	}
-	for (var i = 0; i < layers.length; i++) {
-		var layer = layers[i];
-		if (layer.content) {
-			layer.deactivate();
-		}
-	}
-	for (var i = 0; i < this.selectedLayers.length; i++) {
-		var layer = this.selectedLayers[i];
-		if (layer.content && !layer.locked) {
-			layer.content.visible = true;
-		}
-	}
-	contourManager.selectedLayers = this.selectedLayers;*/
-};
+BlackArrowTool.prototype.onClicked = function() {};
 BlackArrowTool.prototype.checkSelection = function() {
 	var layers = lp.list.getVisibleLayers();
     for (var i = 0; i < layers.length; i++) {
@@ -52,21 +15,6 @@ BlackArrowTool.prototype.checkSelection = function() {
 			layers[i].content.drawBoundingBox();
 		}
 	}
-	/*var layers = lp.list.layers;
-    for (var i = 0; i < layers; i++) {
-        if (points[i].x > this.start.x && points[i].x < this.finish.x && 
-            points[i].y > this.start.y && points[i].y < this.finish.y) {
-			if (keyPressed && keyCode === CONTROL) {
-				points[i].deselect();
-			} else {
-				points[i].select();
-			}
-        } else {
-			if (!(keyPressed && (keyCode === CONTROL || keyCode === SHIFT))) {
-				points[i].deselect();
-			}
-        }
-    }*/
 };
 BlackArrowTool.prototype.normalize = function() {
     if (this.start.x > this.finish.x) {
@@ -170,9 +118,15 @@ BlackArrowTool.prototype.handleClick = function() {
 			layer.contentSelected = false;
 		} else if (keyPressed && (keyCode === SHIFT)) {
 			layer.contentSelected = true;
+			if (layer.content) {
+				contourManager.setActive(layer.content);
+			}
 		} else {
 			this.deselectAll();
 			layer.contentSelected = true;
+			if (layer.content) {
+				contourManager.setActive(layer.content);
+			}
 		}
 	} else {
 		this.deselectAll();

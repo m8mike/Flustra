@@ -45,12 +45,16 @@ LayersPanel.prototype.draw = function() {
 	}
 	popMatrix();
 	ResizablePanel.prototype.draw.call(this);//call superclass method
+	var x = this.x;
+	var y = this.y;
+	var w = this.w;
+	var h = this.h;
 	noFill();
 	stroke(0, 0, 0);
-	rect(this.x + 5, this.y + 15, this.w - 10, this.h - 30);
+	rect(x + 5, y + 15, w - 10, h - 30);
 	fill(255, 255, 255);
-	text("Layers", this.x + 5, this.y + 12);
-	text("0 Layers", this.x + 5, this.y + this.h - 3);
+	text("Layers", x + 5, y + 12);
+	text("0 Layers", x + 5, y + h - 3);
 	this.newLayerButton.draw();
 	this.newSublayerButton.draw();
 	this.deleteLayerButton.draw();
@@ -68,19 +72,27 @@ LayersPanel.prototype.checkButtons = function() {
 };
 LayersPanel.prototype.resize = function() {
     ResizablePanel.prototype.resize.call(this);//call superclass method
-    this.newLayerButton.x = this.x + 75;
-    this.newLayerButton.y = this.y + this.h - 14;
-    this.newSublayerButton.x = this.x + 95;
-    this.newSublayerButton.y = this.y + this.h - 14;
-    this.deleteLayerButton.x = this.x + 115;
-    this.deleteLayerButton.y = this.y + this.h - 14;
-	this.list.resize(this.x + 5, this.y + 15, this.w - 10, this.h - 30);
+	var x = this.x;
+	var y = this.y;
+	var w = this.w;
+	var h = this.h;
+    this.newLayerButton.x = x + 75;
+    this.newLayerButton.y = y + h - 14;
+    this.newSublayerButton.x = x + 95;
+    this.newSublayerButton.y = y + h - 14;
+    this.deleteLayerButton.x = x + 115;
+    this.deleteLayerButton.y = y + h - 14;
+	this.list.resize(x + 5, y + 15, w - 10, h - 30);
 };
 LayersPanel.prototype.onClicked = function() {
 	this.list.onClicked();
 };
 LayersPanel.prototype.checkMouse = function() {
-	if (mouseX > this.x && mouseX < (this.x + this.w) && mouseY > this.y && mouseY < (this.y + this.h)) {
+	var x = this.x;
+	var y = this.y;
+	var w = this.w;
+	var h = this.h;
+	if (mouseX > x && mouseX < (x + w) && mouseY > y && mouseY < (y + h)) {
 		return true;
 	}
 	return false;

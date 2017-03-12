@@ -286,6 +286,9 @@ function tinycolor (color, opts) {
     }
 
     var rgb = inputToRGB(color);
+	if (!rgb) {
+		return null;
+	}
     var r = rgb.r,
         g = rgb.g,
         b = rgb.b,
@@ -404,7 +407,9 @@ tinycolor.fromRatio = function(color) {
 //     "hsv(0, 100%, 100%)" or "hsv 0 100% 100%"
 //
 function inputToRGB(color) {
-
+	if (!color) {
+		return null;
+	}
     var rgb = { r: 255, g: 255, b: 255 };
     var a = 1;
     var ok = false;
@@ -1078,6 +1083,9 @@ window.tinycolor = tinycolor;
     };
 
     function Color(rgb) {
+		if (!rgb) {
+			return null;
+		}
       this.set(tinycolor(rgb).toRgb());
     }
 
