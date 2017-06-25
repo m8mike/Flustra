@@ -5,6 +5,14 @@ var ContourPoint = function(x, y) {
     this.anchorPoint2 = new AnchorPoint(x, y);
 	this.selected = false;
 };
+ContourPoint.prototype.clone = function() {
+	var point = new ContourPoint(this.x, this.y);
+	point.anchorPoint1.x = this.anchorPoint1.x;
+	point.anchorPoint1.y = this.anchorPoint1.y;
+	point.anchorPoint2.x = this.anchorPoint2.x;
+	point.anchorPoint2.y = this.anchorPoint2.y;
+	return point;
+};
 ContourPoint.prototype.select = function() {
 	this.selected = true;
 	this.anchorPoint1.visible = true;
@@ -41,13 +49,11 @@ ContourPoint.prototype.updateAnchors = function(x, y) {
     this.anchorPoint2.x = 2 * this.x - x;
     this.anchorPoint2.y = 2 * this.y - y;
 };
-ContourPoint.prototype.move = function(offset) {
-	this.x += offset.x;
-	this.y += offset.y;
-	this.anchorPoint1.x += offset.x;
-	this.anchorPoint1.y += offset.y;
-	this.anchorPoint2.x += offset.x;
-	this.anchorPoint2.y += offset.y;
+ContourPoint.prototype.move = function(offsetX, offsetY) {
+	this.x += offsetX;
+	this.y += offsetY;
+	this.anchorPoint1.move(offsetX, offsetY);
+	this.anchorPoint2.move(offsetX, offsetY);
 };
 ContourPoint.prototype.rotate = function(center, angle) {
 	var countRotation = function (p) {

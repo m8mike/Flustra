@@ -34,3 +34,21 @@ ImageContent.prototype.logProcessing = function() {
 ImageContent.prototype.isPointInContour = function(x, y) {
 	return false;
 };
+ImageContent.prototype.move = function(offset) {
+	
+};
+ImageContent.prototype.rotate = function(center, angle) {
+	
+};
+ImageContent.prototype.scale = function(center, ratio) {
+	
+};
+ImageContent.prototype.isRectangleIntersectsContour = function(rect) {
+	return false;
+};
+ImageContent.prototype.calculateBounds = function() {
+	return false;
+};
+ImageContent.prototype.drawHandlers = function() {
+	return false;
+};

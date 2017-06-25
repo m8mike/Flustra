@@ -36,6 +36,7 @@ List.prototype.addImage = function(image) {
 	var layer = active.children[active.children.length - 1];
 	layer.content = image;
 	this.resize(this.x, this.y, this.w, this.h);
+	return layer;
 };
 List.prototype.addContour = function(contour) {
 	var active = this.active;
@@ -98,14 +99,17 @@ List.prototype.deleteLayer = function() {
 List.prototype.onDoubleClick = function() {
 	//println("double");
 	var _this = lp.list;
+	if (mouseX < _this.x || mouseX > _this.x + _this.w) {
+		return null;
+	}
 	var offset = mouseY - _this.y + Math.abs(_this.scrollBar.offsetY);
 	var visibleLayers = _this.getVisibleLayers();
 	var layerPressed = visibleLayers[int((offset - (offset % 20)) / 20)];
 	if (!layerPressed) {
 		return null;
 	}
-	this.ps = new LayerPopup({color: colorToString(layerPressed.color), name: layerPressed.name}, layerPressed.setColor, layerPressed);
-	this.ps.open({left: window.innerWidth - _this.w - 470, top:_this.y});
+	_this.ps = new LayerPopup({color: colorToString(layerPressed.color), name: layerPressed.name}, layerPressed.setColor, layerPressed);
+	_this.ps.open({left: window.innerWidth - _this.w - 470, top:_this.y});
 };
 List.prototype.checkMouse = function() {
 	if (mouseX > this.x && mouseX < this.x + this.w && 

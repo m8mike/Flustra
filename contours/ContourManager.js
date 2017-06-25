@@ -37,28 +37,34 @@ ContourManager.prototype.onPressed = function() {
         if (!points.length) {
             return null;
         }
-        if (dist(points[0].x, points[0].y, getMouseX(), getMouseY()) < maxDist) {
-            points.splice(0, 1);
-            if (points.length <= 1) {
-                contour.closed = false;
-            }
-            return null;
-        }
+		for (var i = 0; i < points.length; i++) {
+			if (dist(points[i].x, points[i].y, getMouseX(), getMouseY()) < maxDist) {
+				history.addCommand(new RemovePointCommand(contour, points[i], i));
+				points.splice(i, 1);
+				if (points.length <= 1) {
+					contour.closed = false;
+				}
+				return null;
+			}
+		}
 		this.addContour();
 		contour = this.contour;
     } else if (points.length === 1) {
         if (dist(points[0].x, points[0].y, getMouseX(), getMouseY()) < maxDist) {
+			history.addCommand(new RemovePointCommand(contour, points[0], 0));
             points.splice(0, 1);
             return null;
         }
     } else if (points.length > 1) {
         if (dist(points[0].x, points[0].y, getMouseX(), getMouseY()) < maxDist) {
             contour.closed = true;
+			history.addCommand(new CloseContourCommand(contour));
             return null;
         }
     }
     for (var i = 1; i < points.length; i++) {
         if (dist(points[i].x, points[i].y, getMouseX(), getMouseY()) < maxDist) {
+			history.addCommand(new RemovePointCommand(contour, points[i], i));
             points.splice(i, 1);
             if (points.length === 1) {
                 contour.closed = false;
@@ -73,7 +79,10 @@ ContourManager.prototype.onReleased = function() {
 	if (!this.contour) {
 		return null;
 	}
-    this.contour.setMoving(false);
+	if (this.contour.isMoving()) {
+		history.addCommand(new AddPointCommand(this.contour));
+		this.contour.setMoving(false);
+	}
 };
 ContourManager.prototype.update = function() {
 	if (!this.contour) {

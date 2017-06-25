@@ -9,10 +9,12 @@ RemovePointTool.prototype.onClicked = function() {
 	}
 	var contour = contourManager.contour;
 	var maxDist = 4 * nav.camera.scaleRatio;
-    for (var i = 0; i < contour.points.length; i++) {
-        if (dist(contour.points[i].x, contour.points[i].y, getMouseX(), getMouseY()) < maxDist) {
-            contour.points.splice(i, 1);
-            if (contour.points.length === 1) {
+	var points = contour.points;
+    for (var i = 0; i < points.length; i++) {
+        if (dist(points[i].x, points[i].y, getMouseX(), getMouseY()) < maxDist) {
+			history.addCommand(new RemovePointCommand(contour, points[i], i));
+            points.splice(i, 1);
+            if (points.length === 1) {
                 contour.closed = false;
             }
             return null;

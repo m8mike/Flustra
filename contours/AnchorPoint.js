@@ -9,3 +9,7 @@ AnchorPoint.prototype.draw = function() {
         ellipse(this.x, this.y, size, size);
     }
 };
+AnchorPoint.prototype.move = function(offsetX, offsetY) {
+	this.x += offsetX;
+	this.y += offsetY;
+};

@@ -18,15 +18,21 @@ AngleTool.prototype.onPressed = function() {
 			this.activePoint = contour.points[i];
 			this.activePoint.anchorPoint1.visible = true;
 			this.activePoint.anchorPoint2.visible = true;
+			var anchor1 = this.activePoint.anchorPoint1;
+			var anchor2 = this.activePoint.anchorPoint2;
+			this.start1 = {x:anchor1.x, y:anchor1.y};
+			this.start2 = {x:anchor2.x, y:anchor2.y};
 			return null;
 		} else if (dist(contour.points[i].anchorPoint1.x, contour.points[i].anchorPoint1.y, getMouseX(), getMouseY()) < maxDist) {
 			if (contour.points[i].anchorPoint1.visible) {
 				this.activeAnchor = contour.points[i].anchorPoint1;
+				this.startAnchor = {x:this.activeAnchor.x, y:this.activeAnchor.y};
 				return null;
 			}
 		} else if (dist(contour.points[i].anchorPoint2.x, contour.points[i].anchorPoint2.y, getMouseX(), getMouseY()) < maxDist) {
 			if (contour.points[i].anchorPoint2.visible) {
 				this.activeAnchor = contour.points[i].anchorPoint2;
+				this.startAnchor = {x:this.activeAnchor.x, y:this.activeAnchor.y};
 				return null;
 			}
 		}
@@ -34,6 +40,27 @@ AngleTool.prototype.onPressed = function() {
 };
 AngleTool.prototype.onReleased = function() {
 	Tool.prototype.onReleased.call(this);
+	if (this.activePoint) {
+		var anchor1 = this.activePoint.anchorPoint1;
+		var anchor2 = this.activePoint.anchorPoint2
+		var start1 = this.start1;
+		var start2 = this.start2;
+		var offset1 = {x:anchor1.x-start1.x, y:anchor1.y-start1.y};
+		var offset2 = {x:anchor2.x-start2.x, y:anchor2.y-start2.y};
+		history.addCommand(new MoveAnchorsCommand([anchor1, anchor2], [offset1, offset2]));
+		this.start1 = null;
+		this.start2 = null;
+		this.activePoint = null;
+		return null;
+	}
+	if (!this.activeAnchor || !this.startAnchor) {
+		this.activePoint = null;
+		this.activeAnchor = null;
+		return null;
+	}
+	var offsetX = this.activeAnchor.x - this.startAnchor.x;
+	var offsetY = this.activeAnchor.y - this.startAnchor.y;
+	history.addCommand(new MoveCommand([this.activeAnchor], offsetX, offsetY));
 	this.activePoint = null;
 	this.activeAnchor = null;
 };

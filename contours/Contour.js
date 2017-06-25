@@ -76,7 +76,6 @@ Contour.prototype.isRectangleIntersectsContour = function(rect) {
 			q = (2*a*a*a - 9*a*b + 27*c)/27,
 			q2 = q/2,
 			discriminant = q2*q2 + p3*p3*p3;
-		// and some variables we're going to use later on:
 		var u1,v1,root1,root2,root3;
 		// three possible real roots:
 		if (discriminant < 0) {
@@ -427,10 +426,10 @@ Contour.prototype.showAnchors = function() {
 		this.points[i].anchorPoint2.visible = true;
 	}
 };
-Contour.prototype.move = function(offset) {
+Contour.prototype.move = function(offsetX, offsetY) {
 	var points = this.points;
 	for (var i = 0; i < points.length; i++) {
-		points[i].move(offset);
+		points[i].move(offsetX, offsetY);
 	}
 };
 Contour.prototype.rotate = function(center, angle) {

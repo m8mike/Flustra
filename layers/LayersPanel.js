@@ -22,7 +22,8 @@ var LayersPanel = function(x, y, w, h) {
 	this.newSublayerButton = new NewSublayerButton(this.x + 95, this.y + this.h - 14, "New Sublayer", addSublayer);
 	this.deleteLayerButton = new DeleteLayerButton(this.x + 115, this.y + this.h - 14, "Delete Layer", deleteLayer);
     var canvas = document.getElementById("canvas");
-	canvas.addEventListener('dblclick', this.list.onDoubleClick);
+	var list = this.list;
+	canvas.addEventListener('dblclick', list.onDoubleClick);
 };
 LayersPanel.prototype = Object.create(ResizablePanel.prototype);
 LayersPanel.prototype.draw = function() {

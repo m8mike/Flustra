@@ -23,19 +23,17 @@ AddPointTool.prototype.onClicked = function() {
 		p2 = contour.points[p.i + 1].anchorPoint2;
 		p3 = contour.points[p.i + 1];
 	}
+	var p1before = {x:p1.x, y:p1.y};
+	var p2before = {x:p2.x, y:p2.y};
 	var p3x = p2.x * p.t + p1.x * (1 - p.t);
 	var p3y = p2.y * p.t + p1.y * (1 - p.t);
 	p1.x = p1.x * p.t + p0.x * (1 - p.t);
 	p1.y = p1.y * p.t + p0.y * (1 - p.t);
 	p2.x = p3.x * p.t + p2.x * (1 - p.t);
 	p2.y = p3.y * p.t + p2.y * (1 - p.t);
-	contour.points.splice(p.i + 1, 0, new ContourPoint(p.x, p.y));
-	var point = contour.points[p.i + 1];
-	point.select();
-	point.anchorPoint2.x = p3x * p.t + p1.x * (1 - p.t);
-	point.anchorPoint2.y = p3y * p.t + p1.y * (1 - p.t);
-	point.anchorPoint1.x = p2.x * p.t + p3x * (1 - p.t);
-	point.anchorPoint1.y = p2.y * p.t + p3y * (1 - p.t);
+	var insertCommand = new InsertPointCommand(contour, p, p1before, p2before, p1, p2, {x:p3x, y:p3y});
+	insertCommand.addPoint(contour.points, p, p1, p2, {x:p3x, y:p3y});
+	history.addCommand(insertCommand);
 };
 AddPointTool.prototype.onPressed = function() {
 	Tool.prototype.onPressed.call(this);

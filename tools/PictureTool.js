@@ -8,14 +8,18 @@ PictureTool.prototype.onLoaded = function(file) {
 		return null;
 	}
 	if (file instanceof Image) {
-		lp.list.addImage(new ImageContent(file));
+		var content = new ImageContent(file);
+		var layer = lp.list.addImage(content);
+		history.addCommand(new AddImageCommand(content, layer));
 		return null;
 	}
 	var reader = new FileReader();
     reader.onload = function(e){
 		var img = new Image();
 		img.onload = function() {
-			lp.list.addImage(new ImageContent(img));
+			var content = new ImageContent(img);
+			var layer = lp.list.addImage(content);
+			history.addCommand(new AddImageCommand(content, layer));
 			//canvas.width = img.width;
 			//canvas.height = img.height;
 		}

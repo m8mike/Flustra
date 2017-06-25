@@ -3,6 +3,7 @@ var tools;
 var contourManager;
 var colorSelect;
 var nav;
+var history;
 
 var ctrlKey = false;
 void setup() {
@@ -11,6 +12,7 @@ void setup() {
 	lp = new LayersPanel(window.innerWidth - 210, 10, 210, window.innerHeight - 20 - 200);
 	tools = new ToolsPanel(0, 20, 60, window.innerHeight - 20 - 200);
 	nav = new Navigator(window.innerWidth - 210, window.innerHeight - 10 - 200, 210, 200);
+	history = new History();
 	//nav.draw();
 	lp.draw();
 	colorSelect = new ColorSelect();
@@ -27,7 +29,6 @@ void mouseMoved() {
 	drawAll();
 }
 void drawAll() {
-	console.log("here");
 	background(255, 255, 255);
 	lp.draw();
 	tools.draw();
@@ -99,12 +100,22 @@ void mouseOut() {
 	lp.movingStarted = false;
 	lp.sideMoving = '';
 }
+void keyPressed() {
+	drawAll();
+}
+void keyReleased() {
+	drawAll();
+}
 function KeyPress(e) {
 	var evtobj = window.event? event : e;
 	if (evtobj.keyCode == 65 && evtobj.ctrlKey) {
 		lp.selectEverything();
 	} else if (evtobj.keyCode == 90 && evtobj.ctrlKey) {
-		alert("Ctrl+z");
+		history.undo();
+		//alert("Ctrl+z");
+	} else if (evtobj.keyCode == 89 && evtobj.ctrlKey) {
+		history.redo();
+		//alert("Ctrl+y");
 	} else if (evtobj.keyCode == 27) {
 		tools.activeTool.onEsc();
 	}

@@ -20,16 +20,19 @@ MoveTool.prototype.onReleased = function() {
 	this.finish.y = getMouseY();
 	if (this.movingStarted) {
 		this.movingStarted = false;
-		var offset = {x:getMouseX() - this.start.x, 
-					  y:getMouseY() - this.start.y};
+		var offsetX = getMouseX() - this.start.x;
+		var offsetY = getMouseY() - this.start.y;
 		//move every selected layer
+		var contoursToMove = [];
 		for (var i = 0; i < layers.length; i++) {
 			var layer = layers[i];
 			if (!layer.content || !layer.contentSelected) {
 				continue;
 			}
-			layer.content.move(offset);
+			contoursToMove.push(layer.content);
+			layer.content.move(offsetX, offsetY);
 		}
+		history.addCommand(new MoveCommand(contoursToMove, offsetX, offsetY));
 	} else {
 		this.movingStarted = true;
 		this.start.x = getMouseX();

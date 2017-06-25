@@ -42,6 +42,7 @@ WhiteArrowTool.prototype.checkPointsToMove = function() {
 			this.movingPoint = units[i];
 			this.start.x = getMouseX();
 			this.start.y = getMouseY();
+			this.command = new MoveCommand([this.movingPoint], this.start.x, this.start.y);
 			return true;
 		}
 	}
@@ -57,22 +58,32 @@ WhiteArrowTool.prototype.checkAnchorsToMove = function() {
 		var distToAnchor1 = dist(units[i].anchorPoint1.x, units[i].anchorPoint1.y, getMouseX(), getMouseY());
         if (distToAnchor1 < maxDist && units[i].anchorPoint1.visible) {
 			this.movingAnchor = units[i].anchorPoint1;
+			this.start.x = units[i].anchorPoint1.x;
+			this.start.y = units[i].anchorPoint1.y;
 			var fi1 = Math.atan2(this.movingAnchor.y - units[i].y, this.movingAnchor.x - units[i].x);
 			var fi2 = Math.atan2(units[i].anchorPoint2.y - units[i].y, units[i].anchorPoint2.x - units[i].x);
 			if (Math.round(Math.abs(fi1*180/Math.PI) + Math.abs(fi2*180/Math.PI)) === 180) {
 				this.movingAnchor2 = units[i].anchorPoint2;
 				this.anchorParent = units[i];
+				var offset1 = {x:this.movingAnchor.x, y:this.movingAnchor.y};
+				var offset2 = {x:this.movingAnchor2.x, y:this.movingAnchor2.y};
+				this.command = new MoveAnchorsCommand([this.movingAnchor, this.movingAnchor2], [offset1, offset2]);
 			}
 			return true;
 		}
 		var distToAnchor2 = dist(units[i].anchorPoint2.x, units[i].anchorPoint2.y, getMouseX(), getMouseY());
         if (distToAnchor2 < maxDist && units[i].anchorPoint2.visible) {
 			this.movingAnchor = units[i].anchorPoint2;
+			this.start.x = units[i].anchorPoint2.x;
+			this.start.y = units[i].anchorPoint2.y;
 			var fi1 = Math.atan2(this.movingAnchor.y - units[i].y, this.movingAnchor.x - units[i].x);
 			var fi2 = Math.atan2(units[i].anchorPoint1.y - units[i].y, units[i].anchorPoint1.x - units[i].x);
 			if (Math.round(Math.abs(fi1*180/Math.PI) + Math.abs(fi2*180/Math.PI)) === 180) {
 				this.movingAnchor2 = units[i].anchorPoint1;
 				this.anchorParent = units[i];
+				var offset1 = {x:this.movingAnchor.x, y:this.movingAnchor.y};
+				var offset2 = {x:this.movingAnchor2.x, y:this.movingAnchor2.y};
+				this.command = new MoveAnchorsCommand([this.movingAnchor, this.movingAnchor2], [offset1, offset2]);
 			}
 			return true;
 		}
@@ -162,11 +173,28 @@ WhiteArrowTool.prototype.onReleased = function() {
 		this.movingPoint.y += getMouseY() - this.start.y;
 		this.start.x = 0;
 		this.start.y = 0;
+		this.command.offsetX = this.movingPoint.x - this.command.offsetX;
+		this.command.offsetY = this.movingPoint.y - this.command.offsetY;
+		history.addCommand(this.command);
 		this.movingPoint = null;
+		this.command = null;
 	}
 	if (this.movingAnchor) {
 		this.movingAnchor.x = getMouseX();
 		this.movingAnchor.y = getMouseY();
+		if (this.movingAnchor2) {
+			this.command.offsets[0].x = this.movingAnchor.x - this.command.offsets[0].x;
+			this.command.offsets[0].y = this.movingAnchor.y - this.command.offsets[0].y;
+			this.command.offsets[1].x = this.movingAnchor2.x - this.command.offsets[1].x;
+			this.command.offsets[1].y = this.movingAnchor2.y - this.command.offsets[1].y;
+			history.addCommand(this.command);
+			this.command = null;
+			this.movingAnchor2 = null;
+		} else {
+			history.addCommand(new MoveCommand(this.movingAnchor, this.start.x, this.start.y));
+		}
+		this.start.x = 0;
+		this.start.y = 0;
 		this.movingAnchor = null;
 	}
     if (this.selectionStarted) {
