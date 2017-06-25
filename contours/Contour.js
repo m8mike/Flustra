@@ -28,6 +28,8 @@ Contour.prototype.clone = function() {
 	return contour;
 };
 Contour.prototype.setColor = function(f, s) {
+	/*var contour = this;
+	history.addCommand(new ColorChangeCommand(contour, this.fillColor, this.strokeColor, f, s));*/
 	this.fillColor = {r:f.r, g:f.g, b:f.b, a:f.a};
 	this.strokeColor = {r:s.r, g:s.g, b:s.b, a:s.a};
 };

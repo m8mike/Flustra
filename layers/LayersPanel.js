@@ -7,7 +7,7 @@ var addSublayer = function() {
     self.list.addSublayer();
 };
 var deleteLayer = function() {
-    self.list.deleteLayer();
+    self.list.deleteSelectedLayer();
 };
 var LayersPanel = function(x, y, w, h) {
 	this.x = x;

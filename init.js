@@ -69,6 +69,10 @@ void mousePressed() {
 	}
 }
 void mouseReleased() {
+	onReleased();
+	drawAll();
+}
+void onReleased() {
 	if (mouseButton === RIGHT) {
 		tools.activeTool.onRightReleased();
 		return null;
@@ -119,6 +123,7 @@ function KeyPress(e) {
 	} else if (evtobj.keyCode == 27) {
 		tools.activeTool.onEsc();
 	}
+	drawAll();
 }
 document.onkeydown = KeyPress;
 float getMouseX() {

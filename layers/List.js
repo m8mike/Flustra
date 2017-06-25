@@ -82,7 +82,11 @@ List.prototype.deleteAllChildren = function(layer) {
 		this.layers.splice(this.layers.indexOf(layer), 1);
 	}
 };
-List.prototype.deleteLayer = function() {
+List.prototype.deleteLayer = function(layer) {
+	layer.deactivate();
+	this.deleteAllChildren(layer);
+};
+List.prototype.deleteSelectedLayer = function() {
 	var layersToRemove = [];
 	var layers = this.getVisibleLayers();
     for (var i = 0; i < layers.length; i++) {

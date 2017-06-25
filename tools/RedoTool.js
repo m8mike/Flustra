@@ -4,10 +4,9 @@ var RedoTool = function(x, y) {
 };
 RedoTool.prototype = Object.create(Tool.prototype);
 RedoTool.prototype.onClicked = function() {
-	
 };
 RedoTool.prototype.setActive = function() {
-	
+	history.redo();
 };
 RedoTool.prototype.onPressed = function() {
 	Tool.prototype.onPressed.call(this);

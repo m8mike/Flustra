@@ -4,10 +4,9 @@ var UndoTool = function(x, y) {
 };
 UndoTool.prototype = Object.create(Tool.prototype);
 UndoTool.prototype.onClicked = function() {
-	
 };
 UndoTool.prototype.setActive = function() {
-	
+	history.undo();
 };
 UndoTool.prototype.onPressed = function() {
 	Tool.prototype.onPressed.call(this);

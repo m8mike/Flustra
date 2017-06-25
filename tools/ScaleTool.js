@@ -32,13 +32,16 @@ ScaleTool.prototype.onReleased = function() {
 		var start = this.start;
 		var ratio = dist(getMouseX(), getMouseY(), center.x, center.y) / dist(start.x, start.y, center.x, center.y);
 		var visibleLayers = lp.list.getVisibleLayers();
+		var contentToScale = [];
 		for (var i = 0; i < visibleLayers.length; i++) {
 			var layer = visibleLayers[i];
 			if (!layer.content || !layer.contentSelected) {
 				continue;
 			}
 			layer.content.scale(center, ratio);
+			contentToScale.push(layer.content);
 		}
+		history.addCommand(new ScaleCommand(contentToScale, center, ratio));
 		this.center = {x:0, y:0};
 		this.start = {x:0, y:0};
 		this.finish = {x:0, y:0};

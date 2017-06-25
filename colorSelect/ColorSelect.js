@@ -80,22 +80,59 @@ function rgbToHex(r, g, b) {
 function colorToString(col) {
 	return rgbToHex(col.r, col.g, col.b);
 }
+ColorSelect.prototype.setColor = function(f, s) {
+	this.fillColor.r = f.r;
+	this.fillColor.g = f.g;
+	this.fillColor.b = f.b;
+	this.fillColor.a = f.a;
+	this.strokeColor.r = s.r;
+	this.strokeColor.g = s.g;
+	this.strokeColor.b = s.b;
+	this.strokeColor.a = s.a;
+};
+ColorSelect.prototype.getColors = function() {
+	var fillColor = this.fillColor;
+	var strokeColor = this.strokeColor;
+	var f = {
+		r:fillColor.r,
+		g:fillColor.g,
+		b:fillColor.b,
+		a:fillColor.a
+	};
+	var s = {
+		r:strokeColor.r,
+		g:strokeColor.g,
+		b:strokeColor.b,
+		a:strokeColor.a
+	};
+	var c = {f:f, s:s};
+	return c;
+};
 ColorSelect.prototype.setFillColor = function(r, g, b, a) {
+	var colors = this.getColors();
 	this.fillColor.r = r;
 	this.fillColor.g = g;
 	this.fillColor.b = b;
 	this.fillColor.a = a;
+	var colorSelect = this;
+	history.addCommand(new ColorChangeCommand(colorSelect, colors.f, colors.s, this.fillColor, this.strokeColor));
 };
 ColorSelect.prototype.setStrokeColor = function(r, g, b, a) {
+	var colors = this.getColors();
 	this.strokeColor.r = r;
 	this.strokeColor.g = g;
 	this.strokeColor.b = b;
 	this.strokeColor.a = a;
+	var colorSelect = this;
+	history.addCommand(new ColorChangeCommand(colorSelect, colors.f, colors.s, this.fillColor, this.strokeColor));
 };
 ColorSelect.prototype.update = function() {
 	this.draw();
 	if (!mousePressed) {
-		this.dragWidth = false;
+		if (this.dragWidth) {
+			this.dragWidth = false;
+			this.addStrokeChangeCommandToHistory();
+		}
 	}
 	if (this.dragWidth) {
 		if (this.oldStrokeWidth + this.dragStart - mouseY >= 1) {
@@ -124,6 +161,13 @@ ColorSelect.prototype.onPressed = function() {
 		this.dragWidth = true;
 		this.dragStart = mouseY;
 		this.oldStrokeWidth = this.strokeWidth;
+		this.oldStrokeWidths = [];
+		var layers = lp.list.getVisibleLayers();
+		for (var i = 0; i < layers.length; i++) {
+			if (layers[i].contentSelected && layers[i].content) {
+				this.oldStrokeWidths.push(layers[i].content.strokeWidth);
+			}
+		}
 		return true;
 	}
 	return false;
@@ -156,9 +200,20 @@ ColorSelect.prototype.checkMouse = function() {
 	}
 	return false;
 };
+ColorSelect.prototype.addStrokeChangeCommandToHistory = function() {
+	var contents = [];
+	var layers = lp.list.getVisibleLayers();
+	for (var i = 0; i < layers.length; i++) {
+		if (layers[i].contentSelected && layers[i].content) {
+			contents.push(layers[i].content);
+		}
+	}
+	history.addCommand(new StrokeChangeCommand(contents, this.oldStrokeWidths, this.strokeWidth));
+};
 ColorSelect.prototype.onReleased = function() {
 	if (this.dragWidth) {
 		this.dragWidth = false;
+		this.addStrokeChangeCommandToHistory();
 		return true;
 	}
 	if (mouseX > 50 && mouseX < 70 && mouseY > window.innerHeight - 20 && mouseY < window.innerHeight) {

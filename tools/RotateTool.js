@@ -34,13 +34,16 @@ RotateTool.prototype.onReleased = function() {
 		var finishAngle = Math.atan2(getMouseY() - center.y, getMouseX() - center.x);
 		var angle = finishAngle - startAngle;
 		var visibleLayers = lp.list.getVisibleLayers();
+		var contentToRotate = [];
 		for (var i = 0; i < visibleLayers.length; i++) {
 			var layer = visibleLayers[i];
 			if (!layer.content || !layer.contentSelected) {
 				continue;
 			}
 			layer.content.rotate(center, angle);
+			contentToRotate.push(layer.content);
 		}
+		history.addCommand(new RotateCommand(contentToRotate, center, angle));
 		this.center = {x:0, y:0};
 		this.start = {x:0, y:0};
 		this.finish = {x:0, y:0};
