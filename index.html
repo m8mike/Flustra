@@ -3,9 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <title>Flustra</title>
-<script src="processing.js"></script>
-<script src="logic.js"></script>
-<script src="init.js"></script>
+<!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js" type="text/javascript" charset="utf-8"></script>-->
+<script src="external/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="external/colorcanvas-master/lib/colorcanvas.js" type="text/javascript" charset="utf-8"></script>
+<script src="external/colorcanvas-master/lib/colorcanvas.input.js" type="text/javascript" charset="utf-8"></script>
+<script src="processing.min.js"></script>
 <style type="text/css">
 	html, body {
 		margin: 0px;
@@ -14,9 +16,62 @@
 		display: block;
 	}
 </style>
+<link rel="stylesheet" type="text/css" href="external/colorcanvas-master/site/styles.css" >
 </head>
 
-<body onload="init();" style="background-color:#ffffff">
-	<canvas id="canvas" data-processing-sources="logic.js"></canvas>
+<body style="background-color:#ffffff">
+	<canvas id="canvas" data-processing-sources="Point.js 
+												history/History.js
+												history/Command.js
+												history/StrokeChangeCommand.js
+												history/ColorChangeCommand.js
+												history/AddImageCommand.js
+												history/AddPointCommand.js
+												history/RemovePointCommand.js
+												history/CloseContourCommand.js
+												history/InsertPointCommand.js
+												history/MoveAnchorsCommand.js
+												history/MoveCommand.js
+												history/RotateCommand.js
+												history/ScaleCommand.js
+												buttons/ToolButton.js 
+												buttons/NewLayerButton.js 
+												buttons/NewSublayerButton.js 
+												buttons/DeleteLayerButton.js
+												layers/LayerDrawingPart.js 
+												layers/Layer.js 
+												gui/ScrollBar.js 
+												layers/List.js
+												gui/ResizablePanel.js 
+												layers/LayersPanel.js 
+												contours/ImageContent.js 
+												contours/AnchorPoint.js 
+												contours/ContourPoint.js 
+												contours/Contour.js
+												contours/ContourManager.js
+												colorSelect/DefaultColors.js
+												colorSelect/SwitchColors.js
+												colorSelect/ColorSelect.js
+												navigator/Camera.js
+												navigator/Navigator.js
+												tools/Tool.js
+												tools/MoveTool.js
+												tools/RotateTool.js
+												tools/ScaleTool.js
+												tools/FreeTransformTool.js
+												tools/PictureTool.js
+												tools/SaveTool.js
+												tools/LoadTool.js
+												tools/HandTool.js
+												tools/UndoTool.js
+												tools/RedoTool.js
+												tools/BlackArrowTool.js
+												tools/WhiteArrowTool.js
+												tools/PenTool.js
+												tools/AngleTool.js
+												tools/AddPointTool.js
+												tools/RemovePointTool.js
+												tools/ToolsPanel.js
+												init.js"></canvas>
 </body>
 </html>

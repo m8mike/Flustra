@@ -1,56 +1,134 @@
-var canvas, stage, exportRoot;
-/*var units = [];//from logic.js
-var selectionTool;//from logic.js
-var addWizard = function(x, y) {
-	exportRoot = new lib.wizardus();
-	exportRoot.scaleX = 0.1;
-	exportRoot.scaleY = 0.1;
-	exportRoot.x = x - 10.12;
-	exportRoot.y = y - 14.25;
-	exportRoot.cacheScale = 0.1;
-	exportRoot.cache(10, 10, 20.24, 28.5);
-	exportRoot.snapToPixel = true;
-	stage.addChild(exportRoot);
-	return exportRoot;
-};*/
+var lp;
+var tools;
+var contourManager;
+var colorSelect;
+var nav;
+var history;
 
-function init() {
-	canvas = document.getElementById("canvas");
-	//stage = new createjs.Stage(canvas);
-	//stage.update();
-	canvas.width = window.innerWidth;
-	canvas.height = window.innerHeight;
-	var processingInstance = new Processing(canvas, sketchProc);
-	/*var selectionToolShape = new createjs.Shape();
-	stage.addChild(selectionToolShape);
-	createjs.Ticker.setFPS(24);
-	createjs.Ticker.addEventListener("tick", function(e) {
-		//console.log(createjs.Ticker.getMeasuredFPS());
-		stage.update();
-		for (var i = 0; i < units.length; i++) {
-			if (Math.random() < 0.5) {
-				continue;
-			}
-			if (units[i].destination) {
-				units[i].costume.updateCache();
+var ctrlKey = false;
+void setup() {
+	size(window.innerWidth, window.innerHeight);
+	//background(255, 255, 255);
+	lp = new LayersPanel(window.innerWidth - 210, 10, 210, window.innerHeight - 20 - 200);
+	tools = new ToolsPanel(0, 20, 60, window.innerHeight - 20 - 200);
+	nav = new Navigator(window.innerWidth - 210, window.innerHeight - 10 - 200, 210, 200);
+	history = new History();
+	//nav.draw();
+	lp.draw();
+	colorSelect = new ColorSelect();
+	contourManager = new ContourManager(lp);
+	/*canvas.addEventListener('mousewheel',function(event){
+		mouseController.wheel(event);
+		return false; 
+	}, false);*/
+}
+void mouseDragged() {
+	drawAll();
+}
+void mouseMoved() {
+	drawAll();
+}
+void drawAll() {
+	background(255, 255, 255);
+	lp.draw();
+	tools.draw();
+	if (lp.movingStarted) {
+		lp.resize();
+	}
+	tools.activeTool.update();
+	colorSelect.update();
+}
+void mousePressed() {
+	if (mouseButton === RIGHT) {
+		tools.activeTool.onRightPressed();
+		return null;
+	}
+	var resizeOffset = 5;
+	if (tools.onPressed()) {
+		
+	} else if ((mouseX > lp.x - resizeOffset) && (mouseX < lp.x + lp.w + resizeOffset) &&
+		(mouseY > lp.y - resizeOffset) && (mouseY < lp.y + lp.h + resizeOffset)) {
+		if (!lp.movingStarted && mouseButton === LEFT) {
+			lp.checkSide();
+			//var canvas = document.getElementById("canvas");
+			//canvas.style.cursor = "ew-resize";
+			if (lp.sideMoving.length > 0 && lp.sideMoving.length < 3) {
+				lp.movingStarted = true;
 			} else {
-				continue;
-			}
-			if (units[i].destination.x < units[i].x){
-				units[i].costume.scaleX = -Math.abs(units[i].costume.scaleX);
-			} else {
-				units[i].costume.scaleX = Math.abs(units[i].costume.scaleX);
+				lp.onPressed();
 			}
 		}
-		selectionToolShape.graphics.clear();
-		if (selectionTool) {
-			if (selectionTool.started) {
-				selectionToolShape.alpha = 0.5;
-				selectionToolShape.graphics.beginFill("#0000FF").drawRect(
-						selectionTool.start.x, selectionTool.start.y, 
-						selectionTool.finish.x - selectionTool.start.x, 
-						selectionTool.finish.y - selectionTool.start.y);
-			}
+	} else {
+		if (colorSelect.onPressed()) {
+			
+		} else if (mouseButton === LEFT) {
+			tools.activeTool.onPressed();
+		} else if (mouseButton === RIGHT) {
+			tools.activeTool.onRightPressed();
 		}
-	});*/
-};
+	}
+}
+void mouseReleased() {
+	onReleased();
+	drawAll();
+}
+void onReleased() {
+	if (mouseButton === RIGHT) {
+		tools.activeTool.onRightReleased();
+		return null;
+	}
+	if (lp.movingStarted) {
+		lp.movingStarted = false;
+		lp.sideMoving = '';
+		//var canvas = document.getElementById("canvas");
+		//canvas.style.cursor = "auto";
+	}
+	lp.onReleased();
+	if (tools.onReleased()) {
+		return null;
+	}
+	if (colorSelect.onReleased()) {
+		return null;
+	}
+	if (lp.checkMouse()) {
+		return null;
+	}
+	tools.activeTool.onReleased();
+}
+void mouseClicked() {
+	if (!tools.checkMouse() && !lp.checkMouse() && !colorSelect.checkMouse()) {
+		tools.activeTool.onClicked();
+	}
+}
+void mouseOut() {
+	lp.movingStarted = false;
+	lp.sideMoving = '';
+}
+void keyPressed() {
+	drawAll();
+}
+void keyReleased() {
+	drawAll();
+}
+function KeyPress(e) {
+	var evtobj = window.event? event : e;
+	if (evtobj.keyCode == 65 && evtobj.ctrlKey) {
+		lp.selectEverything();
+	} else if (evtobj.keyCode == 90 && evtobj.ctrlKey) {
+		history.undo();
+		//alert("Ctrl+z");
+	} else if (evtobj.keyCode == 89 && evtobj.ctrlKey) {
+		history.redo();
+		//alert("Ctrl+y");
+	} else if (evtobj.keyCode == 27) {
+		tools.activeTool.onEsc();
+	}
+	drawAll();
+}
+document.onkeydown = KeyPress;
+float getMouseX() {
+	return nav.camera.scaleRatio * (mouseX - nav.camera.x);
+}
+float getMouseY() {
+	return nav.camera.scaleRatio * (mouseY - nav.camera.y);
+}
